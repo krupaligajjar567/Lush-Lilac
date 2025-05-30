@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-8 text-center">My Cart 🛒</h2>
+    {% if cart_items %}
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <table class="min-w-full divide-y divide-[#F9F0F7]">
+            <thead>
+                <tr>
+                    <th class="px-2 py-3"><input type="checkbox" id="select-all" checked></th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Product</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Model</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Price</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Quantity</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#F9F0F7]">
+                {% for item in cart_items %}
+                <tr>
+                    <td class="px-2 py-3 text-center">
+                        <input type="checkbox" class="select-item" checked data-price="{{ item.product.price }}" data-qty="{{ item.quantity }}" data-subtotal="{{ item.product.price * item.quantity }}">
+                    </td>
+                    <td class="px-4 py-3 flex items-center space-x-4">
+                        {% if item.product.image %}
+                        <img src="{{ url_for('static', filename='images/' ~ item.product.image) }}" alt="{{ item.product.name }}" class="w-16 h-16 object-contain rounded-lg bg-[#F9F0F7]">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" class="w-16 h-16 object-contain rounded-lg bg-[#F9F0F7]">
+                        {% endif %}
+                        <span class="text-[#7D5E7A] font-medium">{{ item.product.name }}</span>
+                    </td>
+                    <td class="px-4 py-3 text-[#9A7B97]">
+                        {% if item.model %}
+                            {{ item.model }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-[#9A7B97]">₹{{ '%.2f'|format(item.product.price) }}</td>
+                    <td class="px-4 py-3">
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="w-16 px-2 py-1 border border-[#E8D5E4] rounded text-center cart-qty-input" data-product-id="{{ item.product.id }}" data-model="{{ item.model }}">
+                    </td>
+                    <td class="px-4 py-3 text-[#9A7B97] cart-subtotal">₹{{ '%.2f'|format(item.product.price * item.quantity) }}</td>
+                    <td class="px-4 py-3">
+                        <form class="remove-item-form" data-product-id="{{ item.product.id }}" data-model="{{ item.model }}">
+                            <button type="submit" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-8 flex justify-between items-center">
+            <a href="{{ url_for('index') }}" class="text-[#9A7B97] hover:text-[#7D5E7A]">
+                <i class="ri-arrow-left-line mr-2"></i>
+                Continue Shopping
+            </a>
+            <div class="text-right">
+                <p class="text-lg font-medium text-[#7D5E7A]">Total: <span class="cart-total">₹{{ '%.2f'|format(total) }}</span></p>
+                <a href="{{ url_for('checkout') }}" class="inline-block mt-4 bg-primary hover:bg-[#D4B6D0] text-white px-8 py-3 rounded-button font-medium transition-all duration-300">
+                    Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-[#F9F0F7] rounded-lg p-8 text-center">
+        <p class="text-[#7D5E7A] mb-4">Your cart is empty!</p>
+        <a href="{{ url_for('index') }}" class="inline-block bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300">
+            Start Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quantity input handler
+    document.querySelectorAll('.cart-qty-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            const productId = this.dataset.productId;
+            const model = this.dataset.model;
+            const quantity = parseInt(this.value);
+            
+            if (quantity < 1) {
+                this.value = 1;
+                return;
+            }
+
+            fetch(`/update_cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'update',
+                    quantity: quantity,
+                    model: model
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update subtotal and total
+                    const row = this.closest('tr');
+                    row.querySelector('.cart-subtotal').textContent = `₹${data.subtotal.toFixed(2)}`;
+                    document.querySelector('.cart-total').textContent = `₹${data.total.toFixed(2)}`;
+                    
+                    // Update cart count in header if it exists
+                    const cartCount = document.querySelector('.cart-count');
+                    if (cartCount) {
+                        cartCount.textContent = data.cart_count;
+                    }
+                }
+            });
+        });
+    });
+
+    // Remove item handler
+    document.querySelectorAll('.remove-item-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const model = this.dataset.model;
+
+            fetch(`/update_cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'remove',
+                    model: model
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the row
+                    this.closest('tr').remove();
+                    
+                    // Update total
+                    document.querySelector('.cart-total').textContent = `₹${data.total.toFixed(2)}`;
+                    
+                    // If cart is empty, refresh the page to show empty cart message
+                    if (document.querySelectorAll('tr').length <= 1) {
+                        location.reload();
+                    }
+                }
+            });
+        });
+    });
+
+    // Selection and total update logic
+    function updateCartTotal() {
+        let total = 0;
+        document.querySelectorAll('.select-item').forEach(function(checkbox) {
+            if (checkbox.checked) {
+                const row = checkbox.closest('tr');
+                const price = parseFloat(row.querySelector('.cart-subtotal').textContent.replace('₹',''));
+                total += price;
+            }
+        });
+        document.querySelector('.cart-total').textContent = `₹${total.toFixed(2)}`;
+    }
+    document.querySelectorAll('.select-item').forEach(function(checkbox) {
+        checkbox.addEventListener('change', updateCartTotal);
+        checkbox.addEventListener('click', function(e) { e.stopPropagation(); });
+    });
+    document.getElementById('select-all').addEventListener('change', function() {
+        const checked = this.checked;
+        document.querySelectorAll('.select-item').forEach(cb => { cb.checked = checked; });
+        updateCartTotal();
+    });
+    updateCartTotal();
+});
+</script>
+{% endblock %} 

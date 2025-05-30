@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lush Lilac - Cute & Pretty Accessories</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#9B6B9E',secondary:'#FFB5D8'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merienda:wght@300..900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Merienda', cursive;
+            background-color: #FFF9FD;
+        }
+        .flower-cursor {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23E8D5E4' d='M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8S16.4,20,12,20z'/%3E%3Cpath fill='%23FFE4E1' d='M12,6c-3.3,0-6,2.7-6,6s2.7,6,6,6s6-2.7,6-6S15.3,6,12,6z M12,16c-2.2,0-4-1.8-4-4s1.8-4,4-4s4,1.8,4,4S14.2,16,12,16z'/%3E%3Cpath fill='%23FFF4D2' d='M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M12,14c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,14,12,14z'/%3E%3C/svg%3E"), auto;
+        }
+    </style>
+</head>
+<body class="flower-cursor">
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/" class="font-['Pacifico'] text-3xl text-primary">Lush Lilac</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="/" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Home</a>
+                        <a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Shop</a>
+                        <a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">New Arrivals</a>
+                        <a href="{{ url_for('about') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">About</a>
+                        <a href="{{ url_for('contact') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Contact</a>
+                        {% if current_user.is_authenticated %}
+                        <span class="text-primary px-3 py-2 text-sm font-medium">Welcome, {{ current_user.username }}! 🌸</span>
+                        {% else %}
+                        <button id="loginButton" class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-sm font-medium transition-all duration-300 btn-hover">Login/Register</button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="bg-white/80 border-2 border-[#FFE4E1] py-2 pl-10 pr-4 rounded-full text-sm w-40 md:w-64 focus:border-[#E8D5E4] focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]/50">
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-primary">
+                            <i class="ri-search-line"></i>
+                        </div>
+                    </div>
+                    <div id="wishlistContainer">
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('view_wishlist') }}" class="wishlist-link relative w-8 h-8 flex items-center justify-center text-primary hover:text-[#D4B6D0] transition-colors duration-300 cursor-pointer">
+                            <i class="ri-flower-line ri-lg"></i>
+                            {% set wishlist_count = current_user.wishlists|length %}
+                            {% if wishlist_count > 0 %}
+                            <span class="absolute -top-1 -right-1 bg-[#FFB5D8] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                                {{ wishlist_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        {% else %}
+                        <button onclick="showLoginForm()" class="wishlist-button relative w-8 h-8 flex items-center justify-center text-primary hover:text-[#D4B6D0] transition-colors duration-300 cursor-pointer">
+                            <i class="ri-flower-line ri-lg"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="relative">
+                        <a href="{{ url_for('view_cart') }}" class="cart-link relative w-8 h-8 flex items-center justify-center text-primary hover:text-[#D4B6D0] transition-colors duration-300 cursor-pointer">
+                            <i class="ri-shopping-bag-line ri-lg"></i>
+                            {% if current_user.is_authenticated and cart_items %}
+                            <span class="absolute -top-1 -right-1 bg-[#FFB5D8] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                                {{ cart_items|length }}
+                            </span>
+                            {% endif %}
+                        </a>
+                        {% if current_user.is_authenticated and cart_items %}
+                        <div id="cartDropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-2 hidden z-50">
+                            <div class="px-4 py-2 border-b border-[#F9F0F7]">
+                                <h3 class="text-[#7D5E7A] font-medium">Your Cart</h3>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto">
+                                {% for item in cart_items %}
+                                <div class="px-4 py-2 hover:bg-[#F9F0F7] flex items-center space-x-3">
+                                    {% if item.product.image %}
+                                    <img src="{{ url_for('static', filename='images/' ~ item.product.image) }}" alt="{{ item.product.name }}" class="w-12 h-12 object-contain rounded-lg bg-[#F9F0F7]">
+                                    {% else %}
+                                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" class="w-12 h-12 object-contain rounded-lg bg-[#F9F0F7]">
+                                    {% endif %}
+                                    <div class="flex-1">
+                                        <p class="text-sm text-[#7D5E7A] font-medium">{{ item.product.name }}</p>
+                                        <p class="text-xs text-[#9A7B97]">Qty: {{ item.quantity }} × ${{ '%.2f'|format(item.product.price) }}</p>
+                                    </div>
+                                    <form class="remove-item-form" data-product-id="{{ item.product.id }}">
+                                        <button type="submit" class="text-red-500 hover:text-red-700"><i class="ri-delete-bin-line"></i></button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="px-4 py-2 border-t border-[#F9F0F7]">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-[#7D5E7A] font-medium">Total:</span>
+                                    <span class="text-[#7D5E7A] font-medium">${{ '%.2f'|format(total) }}</span>
+                                </div>
+                                <a href="{{ url_for('view_cart') }}" class="block w-full bg-primary hover:bg-[#D4B6D0] text-white text-center py-2 rounded-button font-medium transition-all duration-300">
+                                    View Cart
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if current_user.is_authenticated %}
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="w-8 h-8 flex items-center justify-center text-primary hover:text-[#D4B6D0] transition-colors duration-300">
+                            <i class="ri-user-line ri-lg"></i>
+                        </button>
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden z-50">
+                            <a href="/my_orders" class="block px-4 py-2 text-[#7D5E7A] hover:bg-[#F9F0F7] hover:text-primary transition-colors duration-300">
+                                <i class="ri-shopping-bag-line mr-2"></i>My Orders
+                            </a>
+                            <a href="/logout" class="block px-4 py-2 text-[#7D5E7A] hover:bg-[#F9F0F7] hover:text-primary transition-colors duration-300">
+                                <i class="ri-logout-box-line mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for category, message in messages %}
+        <div class="{% if category == 'error' %}bg-red-100 text-red-800{% else %}bg-[#F9F0F7] text-[#7D5E7A]{% endif %} rounded-lg p-4 mb-4 flex items-center justify-between">
+            <span>{{ message }}</span>
+            <button class="close-flash text-[#9A7B97]" onclick="this.parentElement.style.display='none'">
+                <i class="ri-close-line"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#F9F0F7] py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <a href="/" class="font-['Pacifico'] text-3xl text-primary mb-4 block">Lush Lilac</a>
+                    <p class="text-[#9A7B97] mb-4">Elevate your everyday with our curated collection of elegant accessories and home decor.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-[#9A7B97] hover:text-primary"><i class="ri-facebook-fill ri-xl"></i></a>
+                        <a href="#" class="text-[#9A7B97] hover:text-primary"><i class="ri-instagram-fill ri-xl"></i></a>
+                        <a href="#" class="text-[#9A7B97] hover:text-primary"><i class="ri-pinterest-fill ri-xl"></i></a>
+                        <a href="#" class="text-[#9A7B97] hover:text-primary"><i class="ri-twitter-fill ri-xl"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-[#7D5E7A] font-semibold mb-4">Shop</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/category/Phone%20Cases" class="text-[#9A7B97] hover:text-primary">Phone Cases</a></li>
+                        <li><a href="/category/Candles" class="text-[#9A7B97] hover:text-primary">Candles</a></li>
+                        <li><a href="/category/Mirrors" class="text-[#9A7B97] hover:text-primary">Mirrors</a></li>
+                        <li><a href="/category/Jewelry%20Boxes" class="text-[#9A7B97] hover:text-primary">Jewelry Boxes</a></li>
+                        <li><a href="/category/Home%20Decor" class="text-[#9A7B97] hover:text-primary">Home Decor</a></li>
+                        <li><a href="/category/Gift%20Sets" class="text-[#9A7B97] hover:text-primary">Gift Sets</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-[#7D5E7A] font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/contact" class="text-[#9A7B97] hover:text-primary">Contact Us</a></li>
+                        <li><a href="#" class="text-[#9A7B97] hover:text-primary">Shipping & Returns</a></li>
+                        <li><a href="#" class="text-[#9A7B97] hover:text-primary">FAQ</a></li>
+                        <li><a href="#" class="text-[#9A7B97] hover:text-primary">Track Order</a></li>
+                        <li><a href="#" class="text-[#9A7B97] hover:text-primary">Privacy Policy</a></li>
+                        <li><a href="#" class="text-[#9A7B97] hover:text-primary">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-[#7D5E7A] font-semibold mb-4">Contact</h3>
+                    <div class="space-y-2 text-[#9A7B97]">
+                        <p><i class="ri-map-pin-line mr-2"></i>1234 Lilac Lane, Beverly Hills, CA 90210</p>
+                        <p><i class="ri-phone-line mr-2"></i>+1 (800) 123-4567</p>
+                        <p><i class="ri-mail-line mr-2"></i>hello@bowsomeboutique.com</p>
+                        <p><i class="ri-time-line mr-2"></i>Mon-Fri: 9am-6pm</p>
+                        <p class="ml-6">Sat-Sun: 10am-4pm</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-[#E8D5E4] mt-8 pt-8 text-center text-[#9A7B97] text-sm">
+                <p>&copy; 2025 Bowsome Boutique. All rights reserved.</p>
+                 <div class="flex justify-center space-x-4 mt-4">
+                    <i class="ri-visa-line ri-2x"></i>
+                    <i class="ri-mastercard-line ri-2x"></i>
+                    <i class="ri-paypal-line ri-2x"></i>
+                    <i class="ri-apple-pay-line ri-2x"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal (always available) -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-[#9A7B97] hover:text-primary">
+                <i class="ri-close-line ri-xl"></i>
+            </button>
+            <!-- Register Form -->
+            <div id="registerForm" class="space-y-4">
+                <h2 class="text-2xl font-semibold text-[#7D5E7A] mb-6 text-center">Create Account 🌸</h2>
+                <form id="registerFormElement" class="space-y-4" action="/register" method="POST">
+                    <div>
+                        <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Username</label>
+                        <input type="text" name="username" class="cute-input w-full py-2 px-4 rounded-button text-[#7D5E7A]" placeholder="Choose a username" required>
+                    </div>
+                    <div>
+                        <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Email</label>
+                        <input type="email" name="email" class="cute-input w-full py-2 px-4 rounded-button text-[#7D5E7A]" placeholder="Enter your email" required>
+                    </div>
+                    <div>
+                        <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Password</label>
+                        <input type="password" name="password" class="cute-input w-full py-2 px-4 rounded-button text-[#7D5E7A]" placeholder="Create a password" required>
+                    </div>
+                    <button type="submit" class="w-full bg-primary hover:bg-[#D4B6D0] text-white py-3 rounded-button font-medium transition-all duration-300 btn-hover">
+                        Register
+                    </button>
+                </form>
+                <p class="text-center text-[#7D5E7A] text-sm mt-4">
+                    Already have an account? 
+                    <a href="#" onclick="showLoginForm()" class="text-primary hover:text-[#D4B6D0]">Login here</a>
+                </p>
+            </div>
+            <!-- Login Form -->
+            <div id="loginForm" class="space-y-4 hidden">
+                <h2 class="text-2xl font-semibold text-[#7D5E7A] mb-6 text-center">Welcome Back! 🌸</h2>
+                <form id="loginFormElement" class="space-y-4" action="/login" method="POST">
+                    <div>
+                        <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Username</label>
+                        <input type="text" name="username" class="cute-input w-full py-2 px-4 rounded-button text-[#7D5E7A]" placeholder="Enter your username" required>
+                    </div>
+                    <div>
+                        <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Password</label>
+                        <input type="password" name="password" class="cute-input w-full py-2 px-4 rounded-button text-[#7D5E7A]" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="w-full bg-primary hover:bg-[#D4B6D0] text-white py-3 rounded-button font-medium transition-all duration-300 btn-hover">
+                        Login
+                    </button>
+                </form>
+                <p class="text-center text-[#7D5E7A] text-sm mt-4">
+                    Don't have an account? 
+                    <a href="#" onclick="showRegisterForm()" class="text-primary hover:text-[#D4B6D0]">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User dropdown functionality
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Cart dropdown functionality
+        const cartLink = document.querySelector('.cart-link');
+        const cartDropdown = document.getElementById('cartDropdown');
+        
+        if (cartLink && cartDropdown) {
+            cartLink.addEventListener('click', function(e) {
+                if (cartDropdown) {
+                    e.preventDefault();
+                    cartDropdown.classList.toggle('hidden');
+                }
+            });
+
+            // Close cart dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!cartLink.contains(event.target) && !cartDropdown.contains(event.target)) {
+                    cartDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Remove item from cart
+        document.querySelectorAll('.remove-item-form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.productId;
+                fetch(`/update_cart/${productId}`, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new URLSearchParams({ action: 'remove' })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the item from the dropdown
+                        const itemElement = this.closest('.px-4.py-2');
+                        if (itemElement) {
+                            itemElement.remove();
+                        }
+                        
+                        // Update cart count
+                        const cartCount = document.querySelector('.cart-link .absolute');
+                        if (cartCount) {
+                            const newCount = parseInt(cartCount.textContent) - 1;
+                            if (newCount > 0) {
+                                cartCount.textContent = newCount;
+                            } else {
+                                cartCount.remove();
+                                cartDropdown.remove();
+                            }
+                        }
+                        
+                        // Update total
+                        const totalElement = cartDropdown.querySelector('.text-[#7D5E7A].font-medium:last-child');
+                        if (totalElement) {
+                            totalElement.textContent = '$' + data.total.toFixed(2);
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+
+        // Add to cart functionality
+        document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.dataset.productId;
+                
+                // Check if user is logged in
+                if (!document.querySelector('.cart-link')) {
+                    showLoginForm();
+                    return;
+                }
+                
+                fetch(`/update_cart/${productId}`, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: new URLSearchParams({ action: 'add', quantity: 1 })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update cart count
+                        let cartCount = document.querySelector('.cart-link .absolute');
+                        if (cartCount) {
+                            cartCount.textContent = parseInt(cartCount.textContent) + 1;
+                        } else {
+                            const cartLink = document.querySelector('.cart-link');
+                            const span = document.createElement('span');
+                            span.className = 'absolute -top-1 -right-1 bg-[#FFB5D8] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full';
+                            span.textContent = '1';
+                            cartLink.appendChild(span);
+                        }
+                        
+                        // Show success message
+                        const flashContainer = document.createElement('div');
+                        flashContainer.className = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4';
+                        flashContainer.innerHTML = `
+                            <div class="bg-[#F9F0F7] border border-[#E8D5E4] text-[#7D5E7A] px-4 py-3 rounded relative flash-message" role="alert">
+                                <span class="block sm:inline">Item added to cart successfully!</span>
+                            </div>
+                        `;
+                        document.querySelector('nav').after(flashContainer);
+                        
+                        // Remove flash message after 5 seconds
+                        setTimeout(() => {
+                            flashContainer.remove();
+                        }, 5000);
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userButton = event.target.closest('button');
+            if (!userButton && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Show flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            });
+
+            // Handle login form submission
+            const loginForm = document.getElementById('loginFormElement');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    
+                    fetch('/login', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hide the auth modal
+                            const authModal = document.getElementById('authModal');
+                            authModal.classList.add('hidden');
+                            
+                            // Replace login button with welcome message
+                            const loginButton = document.getElementById('loginButton');
+                            if (loginButton) {
+                                const navLinks = loginButton.closest('.ml-10.flex.items-center.space-x-8');
+                                if (navLinks) {
+                                    const welcomeSpan = document.createElement('span');
+                                    welcomeSpan.className = 'text-primary px-3 py-2 text-sm font-medium';
+                                    welcomeSpan.textContent = 'Welcome, ' + data.username + '! 🌸';
+                                    navLinks.replaceChild(welcomeSpan, loginButton);
+                                }
+                            }
+
+                            // Update wishlist button to link
+                            const wishlistContainer = document.getElementById('wishlistContainer');
+                            if (wishlistContainer) {
+                                wishlistContainer.innerHTML = `
+                                    <a href="/wishlist" class="wishlist-link relative w-8 h-8 flex items-center justify-center text-primary hover:text-[#D4B6D0] transition-colors duration-300 cursor-pointer">
+                                        <i class="ri-flower-line ri-lg"></i>
+                                    </a>
+                                `;
+                            }
+                            
+                            // Show success message
+                            alert(data.message);
+                            
+                            // Do NOT reload the page, so the welcome message stays!
+                        } else {
+                            alert(data.message || 'Login failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    });
+                });
+            }
+        });
+
+        // Show login form
+        function showLoginForm() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            const authModal = document.getElementById('authModal');
+            authModal.classList.remove('hidden');
+            authModal.classList.add('flex');
+        }
+
+        // Show register form
+        function showRegisterForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        // Close auth modal
+        function closeAuthModal() {
+            const authModal = document.getElementById('authModal');
+            authModal.classList.add('hidden');
+            authModal.classList.remove('flex');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginButton = document.getElementById('loginButton');
+            const authModal = document.getElementById('authModal');
+            if (loginButton && authModal) {
+                loginButton.addEventListener('click', function() {
+                    authModal.classList.remove('hidden');
+                    authModal.classList.add('flex');
+                    showRegisterForm();
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.wishlist-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.dataset.productId;
+                    const icon = this.querySelector('i');
+                    const isFilled = icon.classList.contains('ri-flower-fill');
+                    const url = isFilled ? `/remove_from_wishlist/${productId}` : `/add_to_wishlist/${productId}`;
+                    fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                icon.classList.toggle('ri-flower-fill');
+                                icon.classList.toggle('ri-flower-line');
+                                icon.style.color = icon.classList.contains('ri-flower-fill') ? '#E8D5E4' : '';
+                                // Update badge count in navbar
+                                const badge = document.querySelector('#wishlistContainer .absolute');
+                                if (badge) badge.textContent = data.wishlist_count;
+                                else if (data.wishlist_count > 0) {
+                                    const link = document.querySelector('#wishlistContainer a');
+                                    if (link) {
+                                        const span = document.createElement('span');
+                                        span.className = 'absolute -top-1 -right-1 bg-[#FFB5D8] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full';
+                                        span.textContent = data.wishlist_count;
+                                        link.appendChild(span);
+                                    }
+                                }
+                                // If on wishlist page and removed, remove the product card
+                                if (window.location.pathname === '/wishlist' && !icon.classList.contains('ri-flower-fill')) {
+                                    btn.closest('.category-card').remove();
+                                }
+                            } else if (data.message === 'Please log in to add items to your wishlist') {
+                                showLoginForm();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                });
+            });
+        });
+
+        // Phone case brand/model selector logic
+        document.querySelectorAll('.brand-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            // Try to find the closest parent that contains both buttons and dropdowns
+            let container = btn.closest('.category-card') || btn.closest('.space-y-4') || btn.parentElement;
+            if (!container) container = document; // fallback
+
+            // Hide all dropdowns in this container
+            container.querySelectorAll('.model-dropdown').forEach(function(drop) {
+              drop.classList.add('hidden');
+            });
+            // Remove focus from all brand buttons in this container
+            container.querySelectorAll('.brand-btn').forEach(function(b) {
+              b.classList.remove('bg-primary', 'text-white');
+              b.classList.add('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+            });
+            // Show the dropdown for the selected brand
+            const brand = btn.getAttribute('data-brand');
+            const dropdown = container.querySelector('.model-dropdown[data-brand="' + brand + '"]');
+            if (dropdown) {
+              dropdown.classList.remove('hidden');
+            }
+            // Highlight the selected button
+            btn.classList.remove('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+            btn.classList.add('bg-primary', 'text-white');
+          });
+        });
+    </script>
+</body>
+</html> 

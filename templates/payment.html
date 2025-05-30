@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-[#F9F0F7] via-[#FFF4D2] to-[#E8D5E4] min-h-screen py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 bg-white/80 rounded-2xl shadow-xl p-8 space-y-8">
+        <h1 class="text-3xl font-bold text-[#7D5E7A] text-center mb-8">Payment Details</h1>
+        
+        <!-- Order Summary -->
+        <div class="bg-[#F9F0F7] rounded-lg p-6 shadow-sm">
+            <h2 class="text-xl font-semibold text-[#7D5E7A] mb-4">Order Summary</h2>
+            <ul class="divide-y divide-[#E8D5E4]">
+                {% for item in cart_items %}
+                <li class="py-3 flex justify-between items-center">
+                    <div>
+                        <p class="text-gray-700 font-medium">{{ item.product.name }} ({{ item.model }}) x {{ item.quantity }}</p>
+                        {% if item.custom_image %}
+                            <p class="text-sm text-gray-500">Custom Image: {{ item.custom_image }}</p>
+                        {% endif %}
+                    </div>
+                    <p class="text-gray-900 font-semibold">₹{{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="pt-4 flex justify-between items-center text-lg font-bold text-[#7D5E7A]">
+                <span>Total:</span>
+                <span>₹{{ "%.2f"|format(total) }}</span>
+            </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="bg-[#FFF4D2] rounded-lg p-6 shadow-sm">
+            <h2 class="text-xl font-semibold text-[#7D5E7A] mb-4">Shipping Information</h2>
+            <p class="text-gray-700"><strong>Name:</strong> {{ checkout_details.name }}</p>
+            <p class="text-gray-700"><strong>Address:</strong> {{ checkout_details.address }}</p>
+            <p class="text-gray-700"><strong>Pincode:</strong> {{ checkout_details.pincode }}</p>
+            <p class="text-gray-700"><strong>Phone:</strong> {{ checkout_details.phone }}</p>
+            <p class="text-gray-700"><strong>Email:</strong> {{ checkout_details.email }}</p>
+        </div>
+
+        <!-- Payment Button -->
+        <div class="text-center">
+            <button id="rzp-button" class="bg-primary hover:bg-[#D4B6D0] text-white px-8 py-3 rounded-button font-medium transition-all duration-300 shadow-md">Pay with Razorpay</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "{{ razorpay_key_id }}", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ amount }}", // Amount in paise
+        "currency": "INR",
+        "name": "Lush Lilac",
+        "description": "Order Payment",
+        "order_id": "{{ razorpay_order_id }}", // This is the ID obtained from the Razorpay order created on the server side
+        "handler": function (response){
+            // This function is called after successful payment
+            // You should send the response to your Flask backend for verification
+            window.location.href = "{{ url_for('razorpay_callback') }}?order_id=" + response.razorpay_order_id + "&payment_id=" + response.razorpay_payment_id + "&signature=" + response.razorpay_signature;
+        },
+        "prefill": {
+            "name": "{{ checkout_details.name }}",
+            "email": "{{ checkout_details.email }}",
+            "contact": "{{ checkout_details.phone }}"
+        },
+        "theme": {
+            "color": "#FFB5D8"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+
+    document.getElementById('rzp-button').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock %} 

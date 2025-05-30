@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <!-- Circle Border -->
+  <circle cx="250" cy="250" r="240" fill="none" stroke="#8a5c9e" stroke-width="10"/>
+  <circle cx="250" cy="250" r="225" fill="none" stroke="#8a5c9e" stroke-width="3" stroke-dasharray="10 5"/>
+  
+  <!-- Horizontal Line -->
+  <line x1="10" y1="250" x2="490" y2="250" stroke="#8a5c9e" stroke-width="3"/>
+  
+  <!-- Lilac Flower -->
+  <g transform="translate(250, 150)">
+    <!-- Stem -->
+    <path d="M0,100 L0,0" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+    <!-- Leaves -->
+    <path d="M0,70 L-30,40" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+    <path d="M-30,40 L-40,30" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+    <path d="M0,50 L30,20" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+    <path d="M30,20 L40,10" stroke="#4CAF50" stroke-width="8" stroke-linecap="round"/>
+    
+    <!-- Flowers -->
+    <g fill="#d9c2e5">
+      <ellipse cx="0" cy="-10" rx="15" ry="20"/>
+      <ellipse cx="-10" cy="-30" rx="15" ry="20"/>
+      <ellipse cx="10" cy="-30" rx="15" ry="20"/>
+      <ellipse cx="0" cy="-50" rx="15" ry="20"/>
+      <ellipse cx="-15" cy="-70" rx="15" ry="20"/>
+      <ellipse cx="15" cy="-70" rx="15" ry="20"/>
+    </g>
+  </g>
+  
+  <!-- New York State Silhouette -->
+  <path d="M250,330 L230,320 L210,310 L190,315 L170,325 L160,335 L170,345 L190,340 L210,330 L230,340 Z" fill="#8a5c9e"/>
+  
+  <!-- Text -->
+  <text x="250" y="430" font-family="serif" font-size="60" text-anchor="middle" fill="#8a5c9e" font-weight="bold">LUSH LILAC</text>
+</svg> 

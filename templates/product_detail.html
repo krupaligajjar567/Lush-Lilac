@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-[#F9F0F7] via-[#FFF4D2] to-[#E8D5E4] min-h-screen py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="/shop" class="inline-flex items-center text-[#7D5E7A] hover:text-primary mb-8 transition-colors duration-200">
+            <i class="ri-arrow-left-line mr-2"></i> Back to Shop
+        </a>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 bg-white/80 rounded-3xl shadow-2xl p-8 md:p-12">
+            <!-- Product Image and Customization Preview -->
+            <div class="rounded-2xl overflow-hidden shadow-lg bg-[#F9F0F7] flex flex-col items-start justify-start relative">
+                <img src="{{ url_for('static', filename='images/' ~ product.image) if product.image else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ product.name }}" class="max-h-[28rem] max-w-full object-contain transition-transform duration-300 hover:scale-105 mt-4 ml-4">
+                <div class="absolute top-4 right-4 text-[#FFB5D8] text-3xl opacity-30">
+                    <i class="ri-flower-fill"></i>
+                </div>
+                {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or 'Mouse Pad' in product.name or (product.category and 'Mouse Pad' in product.category) %}
+                <div id="customImagePreview" class="mt-6 ml-4"></div>
+                {% endif %}
+        </div>
+
+        <!-- Product Details -->
+            <div class="space-y-8 relative z-10">
+                <div class="border-b border-[#E8D5E4] pb-4 flex items-center justify-between">
+            <div>
+                        <h1 class="text-4xl font-bold text-[#7D5E7A] tracking-wide mb-2 flex items-center">
+                            {{ product.name }}
+                            <span class="ml-3 text-[#FFB5D8] text-2xl"><i class="ri-heart-3-fill"></i></span>
+                        </h1>
+                        <p class="text-2xl text-[#9A7B97] font-semibold">₹{{ '%.2f'|format(product.price) }}</p>
+                    </div>
+                    {% if product.is_new %}
+                    <span class="bg-[#FFB5D8]/80 text-[#7D5E7A] px-4 py-1 rounded-full font-semibold text-sm shadow">New</span>
+                    {% elif product.is_bestseller %}
+                    <span class="bg-[#FFF4D2]/80 text-[#7D5E7A] px-4 py-1 rounded-full font-semibold text-sm shadow">Best Seller</span>
+                    {% endif %}
+            </div>
+                <form id="addToCartForm" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" id="modelInput" name="model" value="">
+                    {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or 'Mouse Pad' in product.name or (product.category and 'Mouse Pad' in product.category) %}
+                    <div class="bg-[#F9F0F7] rounded-xl p-4 mb-4">
+                        <h3 class="text-lg font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-brush-line mr-2 text-[#FFB5D8]"></i>Customize Your Product</h3>
+                        <label class="block text-[#7D5E7A] mb-2">Upload your image (JPG, PNG, max 5MB):</label>
+                        <input type="file" name="custom_image" id="customImageInput" accept="image/*" class="mb-2">
+                    </div>
+                    {% endif %}
+                    {% if product.category == 'Phone Cases' %}
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-[#7D5E7A] mb-2 flex items-center">
+                            <i class="ri-smartphone-line mr-2 text-[#FFB5D8]"></i>
+                            Select Case Type
+                        </h3>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <button type="button" id="glass-case-btn" class="case-type-btn bg-[#F9F0F7] text-[#7D5E7A] px-5 py-2 rounded-full border-2 border-[#E8D5E4] shadow-sm font-medium transition-all duration-300 hover:bg-primary hover:text-white focus:ring-2 focus:ring-[#FFB5D8]">Glass Case</button>
+                            <button type="button" id="silicone-case-btn" class="case-type-btn bg-[#F9F0F7] text-[#7D5E7A] px-5 py-2 rounded-full border-2 border-[#E8D5E4] shadow-sm font-medium transition-all duration-300 hover:bg-primary hover:text-white focus:ring-2 focus:ring-[#FFB5D8]">Silicone Case</button>
+                    </div>
+                        <div id="brand-selectors"></div>
+                </div>
+                {% endif %}
+                <div class="flex items-center space-x-4 mt-6">
+                        <button type="submit" id="addToCartBtn" class="bg-primary hover:bg-[#D4B6D0] text-white px-8 py-3 rounded-button font-medium transition-all duration-300 btn-hover flex items-center shadow-md relative overflow-hidden">
+                        <i class="ri-shopping-bag-line mr-2"></i>
+                        Add to Cart
+                    </button>
+                    <button type="button" class="w-12 h-12 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                        <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %} ri-xl"></i>
+                    </button>
+                        <!-- Social Share Buttons -->
+                        <div class="flex gap-2 ml-4">
+                            <a href="#" class="w-10 h-10 bg-[#FFB5D8]/20 rounded-full flex items-center justify-center text-[#7D5E7A] hover:bg-[#FFB5D8] hover:text-white transition-colors" title="Share on Instagram"><i class="ri-instagram-line"></i></a>
+                            <a href="#" class="w-10 h-10 bg-[#E8D5E4]/20 rounded-full flex items-center justify-center text-[#7D5E7A] hover:bg-[#E8D5E4] hover:text-white transition-colors" title="Share on Pinterest"><i class="ri-pinterest-line"></i></a>
+                            <a href="#" class="w-10 h-10 bg-[#FFF4D2]/20 rounded-full flex items-center justify-center text-[#7D5E7A] hover:bg-[#FFF4D2] hover:text-white transition-colors" title="Share on WhatsApp"><i class="ri-whatsapp-line"></i></a>
+                        </div>
+                    </div>
+                </form>
+                <div class="border-t border-[#E8D5E4] pt-6 mt-6">
+                    <h3 class="text-lg font-semibold text-[#7D5E7A] mb-4 flex items-center">
+                        <i class="ri-file-list-3-line mr-2 text-[#FFB5D8]"></i>
+                        Product Description
+                    </h3>
+                    <p class="text-[#9A7B97] text-lg">{{ product.description or 'No description available.' }}</p>
+                </div>
+                <!-- Soft Divider with Icon -->
+                <div class="flex items-center my-8">
+                    <div class="flex-grow border-t border-[#E8D5E4]"></div>
+                    <span class="mx-4 text-[#FFB5D8] text-2xl"><i class="ri-flower-fill"></i></span>
+                    <div class="flex-grow border-t border-[#E8D5E4]"></div>
+                </div>
+                <!-- Customer Reviews Preview -->
+                <div class="bg-[#F9F0F7] rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-semibold text-[#7D5E7A] mb-4 flex items-center"><i class="ri-star-smile-line mr-2 text-[#FFD88D]"></i>Customer Reviews</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <img src="{{ url_for('static', filename='images/avatar1.png') }}" class="w-8 h-8 rounded-full border-2 border-[#E8D5E4]" alt="reviewer">
+                            <div>
+                                <div class="flex items-center text-[#FFD88D] text-sm">
+                                    <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                                </div>
+                                <div class="text-[#7D5E7A] text-sm">“Absolutely adorable and great quality!”</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <img src="{{ url_for('static', filename='images/avatar2.png') }}" class="w-8 h-8 rounded-full border-2 border-[#E8D5E4]" alt="reviewer">
+                            <div>
+                                <div class="flex items-center text-[#FFD88D] text-sm">
+                                    <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+                                </div>
+                                <div class="text-[#7D5E7A] text-sm">“Fast shipping and so cute in person!”</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- You May Also Like Section -->
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold text-[#7D5E7A] mb-6 flex items-center"><i class="ri-sparkling-2-line mr-2 text-[#FFB5D8]"></i>You May Also Like</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {% for rec in recommendations %}
+                        <a href="/product/{{ rec.id }}" class="block bg-white rounded-xl shadow hover:shadow-lg transition-shadow p-4 text-center">
+                            <img src="{{ url_for('static', filename='images/' ~ rec.image) if rec.image else url_for('static', filename='images/placeholder.jpg') }}" alt="{{ rec.name }}" class="h-32 mx-auto object-contain mb-2">
+                            <div class="text-[#7D5E7A] font-medium">{{ rec.name }}</div>
+                            <div class="text-[#9A7B97] text-sm">₹{{ '%.2f'|format(rec.price) }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Back to Top Button -->
+                <button id="backToTopBtn" class="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-[#FFB5D8] text-white shadow-lg flex items-center justify-center text-2xl z-50 hover:bg-[#E8D5E4] transition-all duration-300" style="display:none;"><i class="ri-arrow-up-line"></i></button>
+                <!-- Floating Flowers Animation Container -->
+                <div id="floatingFlowersContainer" class="pointer-events-none fixed inset-0 z-50"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.case-type-btn, .brand-btn {
+    box-shadow: 0 2px 8px 0 #e8d5e4a0;
+}
+.case-type-btn.bg-primary, .brand-btn.bg-primary {
+    box-shadow: 0 4px 16px 0 #ffb5d880;
+    border-color: #FFB5D8;
+}
+.brand-btn {
+    transition: all 0.2s;
+}
+.brand-btn.bg-primary, .brand-btn:focus {
+    outline: none;
+    border-color: #FFB5D8;
+    box-shadow: 0 4px 16px 0 #ffb5d880;
+}
+#addToCartBtn {
+    box-shadow: 0 2px 8px 0 #e8d5e4a0;
+}
+#addToCartBtn:hover {
+    box-shadow: 0 6px 24px 0 #ffb5d880;
+}
+@keyframes float-corner {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+@keyframes float-corner2 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+.animate-float-corner { animation: float-corner 8s infinite ease-in-out; }
+.animate-float-corner2 { animation: float-corner2 10s infinite ease-in-out; }
+
+@keyframes flower-float {
+    0% { opacity: 0; transform: translateY(0) scale(0.7) rotate(-10deg); }
+    10% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-120px) scale(1.2) rotate(10deg); }
+}
+.floating-flower {
+    position: absolute;
+    pointer-events: none;
+    width: 48px;
+    height: 48px;
+    opacity: 0;
+    animation: flower-float 1.8s forwards;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartForm = document.getElementById('addToCartForm');
+    const modelInput = document.getElementById('modelInput');
+    const brandButtons = document.querySelectorAll('.brand-btn');
+    const modelDropdowns = document.querySelectorAll('.model-dropdown');
+    
+    // Brand button click handler
+    brandButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const brand = this.dataset.brand;
+            
+            // Hide all dropdowns
+            modelDropdowns.forEach(dropdown => dropdown.classList.add('hidden'));
+            
+            // Show selected brand's dropdown
+            const targetDropdown = document.querySelector(`.model-dropdown[data-brand="${brand}"]`);
+            if (targetDropdown) {
+                targetDropdown.classList.remove('hidden');
+            }
+            
+            // Update button styles
+            brandButtons.forEach(button => {
+                button.classList.remove('bg-primary', 'text-white');
+                button.classList.add('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+            });
+            this.classList.remove('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+            this.classList.add('bg-primary', 'text-white');
+        });
+    });
+
+    // Model dropdown change handler
+    document.querySelectorAll('.phone-model').forEach(function(select) {
+        select.addEventListener('change', function() {
+            console.log('Model selected:', this.value);
+            modelInput.value = this.value;
+        });
+    });
+
+    // Form submission validation
+    addToCartForm.addEventListener('submit', function(e) {
+        // Check if model selection is needed but not selected
+        const needsModel = document.querySelector('.model-dropdown') !== null;
+        if (needsModel && modelInput.value === '') {
+            e.preventDefault();
+            alert('Please select a phone model first!');
+            return false;
+        }
+        
+        // Debug to ensure we're sending the right data
+        console.log('Submitting form with model:', modelInput.value);
+        return true;
+    });
+
+    // Case type logic
+    const glassBtn = document.getElementById('glass-case-btn');
+    const siliconeBtn = document.getElementById('silicone-case-btn');
+    const brandSelectors = document.getElementById('brand-selectors');
+
+    const brandDropdownsHTML = `
+        <div class="model-dropdown hidden" data-brand="iphone">
+            <select id="iphone-model" class="phone-model w-full py-3 px-4 rounded-lg border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]">
+                <option value="">Select iPhone Model</option>
+                <option value="iPhone 7 Plus">iPhone 7 Plus</option>
+                <option value="iPhone X">iPhone X</option>
+                <option value="iPhone 6 and 6s">iPhone 6 and 6s</option>
+                <option value="iPhone XR">iPhone XR</option>
+                <option value="iPhone 11 Pro Max">iPhone 11 Pro Max</option>
+                <option value="iPhone 11 Pro">iPhone 11 Pro</option>
+                <option value="iPhone 11">iPhone 11</option>
+                <option value="iPhone XS">iPhone XS</option>
+                <option value="iPhone 8 Plus">iPhone 8 Plus</option>
+                <option value="iPhone 8">iPhone 8</option>
+                <option value="iPhone 7">iPhone 7</option>
+                <option value="iPhone SE 2020">iPhone SE 2020</option>
+                <option value="iPhone 12">iPhone 12</option>
+                <option value="iPhone 12 Pro">iPhone 12 Pro</option>
+                <option value="iPhone 12 Pro max">iPhone 12 Pro max</option>
+                <option value="iPhone XS Max">iPhone XS Max</option>
+                <option value="iPhone 12 Mini">iPhone 12 Mini</option>
+                <option value="iPhone 13">iPhone 13</option>
+                <option value="iPhone 13 Pro">iPhone 13 Pro</option>
+                <option value="iPhone 13 Pro Max">iPhone 13 Pro Max</option>
+                <option value="iPhone 13 Mini">iPhone 13 Mini</option>
+                <option value="iPhone 14">iPhone 14</option>
+                <option value="iPhone 14 Pro">iPhone 14 Pro</option>
+                <option value="iPhone 14 Pro Max">iPhone 14 Pro Max</option>
+                <option value="iPhone 14 Plus">iPhone 14 Plus</option>
+                <option value="iPhone 15">iPhone 15</option>
+                <option value="iPhone 15 Pro">iPhone 15 Pro</option>
+                <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+                <option value="iPhone 15 Plus">iPhone 15 Plus</option>
+                <option value="iPhone 16">iPhone 16</option>
+                <option value="iPhone 16 Pro">iPhone 16 Pro</option>
+                <option value="iPhone 16 Plus">iPhone 16 Plus</option>
+                <option value="iPhone 16 Pro Max">iPhone 16 Pro Max</option>
+            </select>
+        </div>
+        <div class="model-dropdown hidden" data-brand="samsung">
+            <select id="samsung-model" class="phone-model w-full py-3 px-4 rounded-lg border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]">
+                <option value="">Select Samsung Model</option>
+                <option value="Samsung S23">S23</option>
+                <option value="Samsung S23 Plus">S23 Plus</option>
+                <option value="Samsung S23 Ultra">S23 Ultra</option>
+            </select>
+        </div>
+        <div class="model-dropdown hidden" data-brand="redmi">
+            <select id="redmi-model" class="phone-model w-full py-3 px-4 rounded-lg border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]">
+                <option value="">Select Redmi/Xiaomi Model</option>
+                <option value="Redmi Note 12">Redmi Note 12</option>
+                <option value="Redmi Note 12 Pro">Redmi Note 12 Pro</option>
+                <option value="Xiaomi 11i 5G">Xiaomi 11i 5G</option>
+                <option value="Xiaomi Mi 11 Ultra">Xiaomi Mi 11 Ultra</option>
+                <option value="Xiaomi 11T Pro 5G">Xiaomi 11T Pro 5G</option>
+                <option value="Xiaomi 11T">Xiaomi 11T</option>
+            </select>
+        </div>
+        <div class="model-dropdown hidden" data-brand="oneplus">
+            <select id="oneplus-model" class="phone-model w-full py-3 px-4 rounded-lg border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]">
+                <option value="">Select OnePlus Model</option>
+                <option value="OnePlus 7T">OnePlus 7T</option>
+                <option value="OnePlus 7 Pro">OnePlus 7 Pro</option>
+                <option value="OnePlus 7T Pro">OnePlus 7T Pro</option>
+                <option value="OnePlus Nord">OnePlus Nord</option>
+                <option value="OnePlus 8T">OnePlus 8T</option>
+                <option value="OnePlus 9">OnePlus 9</option>
+                <option value="OnePlus 9 Pro">OnePlus 9 Pro</option>
+                <option value="OnePlus 8 Pro">OnePlus 8 Pro</option>
+                <option value="OnePlus 9R">OnePlus 9R</option>
+                <option value="OnePlus Nord CE">OnePlus Nord CE</option>
+                <option value="OnePlus 11R">OnePlus 11R</option>
+                <option value="OnePlus 11">OnePlus 11</option>
+                <option value="OnePlus 10 Pro">OnePlus 10 Pro</option>
+                <option value="OnePlus 10R">OnePlus 10R</option>
+                <option value="OnePlus 10T">OnePlus 10T</option>
+            </select>
+        </div>
+    `;
+    const glassHTML = `
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="iphone">iPhone</button>
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="oneplus">OnePlus</button>
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="samsung">Samsung</button>
+        </div>
+        ${brandDropdownsHTML}
+    `;
+    const siliconeHTML = `
+        <div class="flex flex-wrap gap-2">
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="iphone">iPhone</button>
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="samsung">Samsung</button>
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="redmi">Redmi</button>
+            <button type="button" class="brand-btn bg-[#F9F0F7] text-[#7D5E7A] px-4 py-2 rounded-full border border-[#E8D5E4]" data-brand="oneplus">OnePlus</button>
+        </div>
+        ${brandDropdownsHTML}
+    `;
+    // Helper to set active button
+    function setActiveCaseType(type) {
+        if(type === 'glass') {
+            glassBtn.classList.add('bg-primary', 'text-white');
+            siliconeBtn.classList.remove('bg-primary', 'text-white');
+            brandSelectors.innerHTML = glassHTML;
+        } else {
+            siliconeBtn.classList.add('bg-primary', 'text-white');
+            glassBtn.classList.remove('bg-primary', 'text-white');
+            brandSelectors.innerHTML = siliconeHTML;
+        }
+        // Re-attach brand/model JS events here
+        attachBrandDropdownEvents();
+    }
+    function attachBrandDropdownEvents() {
+        const brandButtons = document.querySelectorAll('.brand-btn');
+        const modelDropdowns = document.querySelectorAll('.model-dropdown');
+        brandButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const brand = this.dataset.brand;
+                modelDropdowns.forEach(dropdown => dropdown.classList.add('hidden'));
+                const targetDropdown = document.querySelector(`.model-dropdown[data-brand="${brand}"]`);
+                if (targetDropdown) {
+                    targetDropdown.classList.remove('hidden');
+                }
+                brandButtons.forEach(button => {
+                    button.classList.remove('bg-primary', 'text-white');
+                    button.classList.add('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+                });
+                this.classList.remove('bg-[#F9F0F7]', 'text-[#7D5E7A]');
+                this.classList.add('bg-primary', 'text-white');
+            });
+        });
+        document.querySelectorAll('.phone-model').forEach(function(select) {
+            select.addEventListener('change', function() {
+                modelInput.value = this.value;
+            });
+        });
+    }
+    // Default selection
+    {% if 'Glass' in product.name or 'glass' in product.name|lower %}
+    setActiveCaseType('glass');
+    {% else %}
+    setActiveCaseType('silicone');
+    {% endif %}
+    glassBtn.onclick = () => setActiveCaseType('glass');
+    siliconeBtn.onclick = () => setActiveCaseType('silicone');
+    // Initial attach for first render
+    attachBrandDropdownEvents();
+});
+
+// Floating Flowers on Add to Cart
+const addToCartBtn = document.getElementById('addToCartBtn');
+const floatingFlowersContainer = document.getElementById('floatingFlowersContainer');
+addToCartBtn.addEventListener('click', function(e) {
+    // Only animate if not disabled
+    if (addToCartBtn.disabled) return;
+    for (let i = 0; i < 5; i++) {
+        const flower = document.createElement('img');
+        flower.src = "{{ url_for('static', filename='images/flower-pink.svg') }}";
+        flower.className = 'floating-flower';
+        flower.style.left = (addToCartBtn.getBoundingClientRect().left + 30 + Math.random()*60) + 'px';
+        flower.style.top = (addToCartBtn.getBoundingClientRect().top - 10 + window.scrollY) + 'px';
+        flower.style.zIndex = 9999;
+        flower.style.animationDelay = (i * 0.12) + 's';
+        floatingFlowersContainer.appendChild(flower);
+        setTimeout(() => flower.remove(), 2000);
+    }
+});
+
+// Back to Top Button
+const backToTopBtn = document.getElementById('backToTopBtn');
+window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+        backToTopBtn.style.display = 'flex';
+    } else {
+        backToTopBtn.style.display = 'none';
+    }
+});
+backToTopBtn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('customImageInput')?.addEventListener('change', function(e) {
+    const preview = document.getElementById('customImagePreview');
+    preview.innerHTML = '';
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'max-h-40 rounded shadow mt-2';
+            preview.appendChild(img);
+            // Add remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove Image';
+            removeBtn.type = 'button';
+            removeBtn.className = 'mt-3 px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-all';
+            removeBtn.onclick = function() {
+                document.getElementById('customImageInput').value = '';
+                preview.innerHTML = '';
+            };
+            preview.appendChild(removeBtn);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %} 

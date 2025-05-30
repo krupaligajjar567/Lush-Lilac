@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-8 text-center">Checkout 📝</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form method="POST" class="bg-white rounded-lg shadow-sm p-8 space-y-6 min-h-[400px]">
+            <div>
+                <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Full Name</label>
+                <input type="text" name="name" class="w-full py-2 px-4 rounded-button border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]" required>
+            </div>
+            <div>
+                <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Address</label>
+                <textarea name="address" class="w-full py-2 px-4 rounded-button border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]" required></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Pincode</label>
+                    <input type="text" name="pincode" class="w-full py-2 px-4 rounded-button border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]" required>
+                </div>
+                <div>
+                    <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Phone Number</label>
+                    <input type="text" name="phone" class="w-full py-2 px-4 rounded-button border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]" required>
+                </div>
+            </div>
+            <div>
+                <label class="block text-[#7D5E7A] text-sm font-medium mb-2">Email</label>
+                <input type="email" name="email" class="w-full py-2 px-4 rounded-button border border-[#E8D5E4] bg-[#F9F0F7] text-[#7D5E7A]" required>
+            </div>
+            <button type="submit" class="w-full bg-primary hover:bg-[#D4B6D0] text-white py-3 rounded-button font-medium transition-all duration-300 btn-hover">Continue to Payment</button>
+        </form>
+        <div class="bg-[#F9F0F7] rounded-lg p-8">
+            <h3 class="text-xl font-semibold text-[#7D5E7A] mb-4">Order Summary</h3>
+            <ul class="divide-y divide-[#E8D5E4] mb-4">
+                {% for item in cart_items %}
+                <li class="py-2 flex justify-between items-center">
+                    <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                    <span>₹{{ '%.2f'|format(item.product.price * item.quantity) }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="flex justify-between items-center font-semibold text-[#7D5E7A] text-lg">
+                <span>Total:</span>
+                <span>₹{{ '%.2f'|format(total) }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

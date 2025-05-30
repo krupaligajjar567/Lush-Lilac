@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Shop Our Aesthetic Collection 🌷</h2>
+        <p class="text-[#9A7B97] max-w-2xl mx-auto">Find the perfect blend of functionality and beauty for your everyday life.</p>
+    </div>
+
+    {# Bestsellers Section #}
+    {% if bestsellers %}
+    <div class="mb-16">
+        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">Our Bestsellers ✨ (Showing {{ bestsellers|length }} product(s))</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in bestsellers %}
+            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                 <a href="/product/{{ product.id }}">
+                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
+                        {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="p-4">
+                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                            </button>
+                             {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
+                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </a>
+                            {% else %}
+                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# New Arrivals Section #}
+    {% if new_arrivals %}
+    <div class="mb-16">
+        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">New Arrivals 🌸</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in new_arrivals %}
+            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                 <a href="/product/{{ product.id }}">
+                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
+                        {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="p-4">
+                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                            </button>
+                            {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
+                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </a>
+                            {% else %}
+                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# All Products Section #}
+    {% if all_products %}
+    <div>
+        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">All Products ✨</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in all_products %}
+            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                 <a href="/product/{{ product.id }}">
+                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
+                        {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="p-4">
+                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+                    <div class="flex justify-between items-center mt-2">
+                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                         <div class="flex space-x-2">
+                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                            </button>
+                            {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
+                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </a>
+                            {% else %}
+                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
+                                    <i class="ri-shopping-bag-line"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Message if no products are found #}
+    {% if not bestsellers and not new_arrivals and not all_products %}
+    <div class="bg-[#F9F0F7] rounded-lg p-6 text-center">
+        <p class="text-[#7D5E7A]">No products found. Check back soon!</p>
+    </div>
+    {% endif %}
+
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add to Cart button logic
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            // For simple products, directly add to cart with quantity 1 and empty model
+            fetch(`/update_cart/${productId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'add', quantity: 1, model: '' })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Added to cart!');
+                    // Optionally update cart count display
+                    // document.getElementById('cart-count').textContent = data.cart_count;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                alert('An error occurred while adding to cart.');
+            });
+        });
+    });
+
+    // Wishlist button logic (assuming you have a separate script for this or will add it)
+    // Example (needs backend endpoint): 
+    // document.querySelectorAll('.wishlist-btn').forEach(function(btn) {
+    //     btn.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         const productId = this.dataset.productId;
+    //         fetch(`/add_to_wishlist/${productId}`, { method: 'POST' })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if (data.success) {
+    //                 alert(data.message);
+    //                 // Toggle icon or update wishlist count
+    //             } else {
+    //                 alert(data.message);
+    //             }
+    //         });
+    //     });
+    // });
+});
+</script>
+{% endblock %} 

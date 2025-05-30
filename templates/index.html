@@ -1,0 +1,652 @@
+{% extends "base.html" %}
+
+{% block content %}
+{# Add new CSS for blob category cards #}
+<style>
+.category-card-blob {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 250px; /* Adjust height as needed */
+    overflow: hidden;
+    text-decoration: none;
+    border-radius: 16px; /* Subtle rounded corners for the container */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card-blob:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.blob-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--blob-color, #FFB5D8); /* Placeholder, will set color inline */
+    /* Border-radius for arched top shape */
+    border-top-left-radius: 80% 30%;
+    border-top-right-radius: 80% 30%;
+    border-bottom-left-radius: 5% 10%;
+    border-bottom-right-radius: 5% 10%;
+    transition: border-radius 0.5s ease;
+}
+
+.category-card-blob:hover .blob-background {
+     /* Slight variation on hover */
+     border-top-left-radius: 85% 35%;
+    border-top-right-radius: 85% 35%;
+    border-bottom-left-radius: 8% 12%;
+    border-bottom-right-radius: 8% 12%;
+}
+
+.category-image-wrapper {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide parts of the image outside the shape */
+     /* Match blob shape border-radius */
+    border-top-left-radius: 80% 30%;
+    border-top-right-radius: 80% 30%;
+    border-bottom-left-radius: 5% 10%;
+    border-bottom-right-radius: 5% 10%;
+    transition: border-radius 0.5s ease;
+}
+
+.category-card-blob:hover .category-image-wrapper {
+     /* Match blob hover shape border-radius */
+    border-top-left-radius: 85% 35%;
+    border-top-right-radius: 85% 35%;
+    border-bottom-left-radius: 8% 12%;
+    border-bottom-right-radius: 8% 12%;
+}
+
+.category-image-wrapper img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the wrapper area */
+}
+
+.category-text-band {
+    position: absolute;
+    bottom: 10%; /* Position near the bottom */
+    left: 0;
+    right: 0;
+    /* Removed translateY as we are positioning from the bottom */
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white band */
+    text-align: center;
+    padding: 0.5rem 1rem;
+    z-index: 10; /* Ensure it's above the image */
+}
+
+.category-text-band h3 {
+    margin: 0;
+    color: #7D5E7A; /* Text color from palette */
+    font-size: 1rem; /* Adjust font size as needed */
+    font-weight: 600;
+}
+
+/* Style for category image container (now square) */
+.category-image-container {
+    width: 160px; /* Square size, adjusted */
+    height: 160px; /* Square size, adjusted */
+    background-color: #F9F0F7; /* Background color, similar to bestsellers */
+    border-radius: 8px; /* Small rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 auto 0.5rem auto; /* Center the container and reduce margin below */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add a subtle shadow */
+}
+
+.category-image-container img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure image covers the container */
+}
+
+.category-item-wrapper {
+    position: relative; /* Needed for absolute positioning of decorative elements */
+    padding: 2rem 1.5rem; /* Increased padding for decorative elements */
+}
+
+.decorative-element {
+    position: absolute;
+    font-size: 1.8rem; /* Slightly increased size of the icon */
+    color: #FFB5D8; /* A cute color */
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 5; /* Ensure it's above other elements but below text band */
+    opacity: 0.8; /* Slightly transparent */
+}
+
+.decorative-flower-top-right {
+    position: absolute;
+    font-size: 1.8rem;
+    color: #FFB5D8;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.8;
+    top: 0.8rem; /* Adjusted position */
+    right: 0.8rem; /* Adjusted position */
+}
+
+.decorative-bow-bottom-left {
+    position: absolute;
+    font-size: 1.8rem;
+    color: #FFB5D8;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.8;
+    bottom: 0.8rem; /* Adjusted position */
+    left: 0.8rem; /* Adjusted position */
+}
+
+/* Styles for category text */
+.category-text h3 {
+    font-size: 1.5rem; /* Further reduced font size for heading */
+    margin-bottom: 0.5rem; /* Adjusted margin */
+}
+
+.category-text p {
+    font-size: 0.9rem; /* Further reduced font size for description */
+    margin-bottom: 1rem; /* Adjusted margin */
+}
+
+/* New styles for horizontal category cards */
+.horizontal-category-list {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    gap: 1.5rem; /* Space between cards */
+    padding-bottom: 1rem; /* Add some padding for the scrollbar */
+    scrollbar-width: thin; /* Make scrollbar thinner */
+    scrollbar-color: #FFB5D8 #F9F0F7; /* Scrollbar color */
+}
+
+.horizontal-category-list::-webkit-scrollbar {
+    height: 8px; /* Height of the scrollbar */
+}
+
+.horizontal-category-list::-webkit-scrollbar-track {
+    background: #F9F0F7; /* Track color */
+    border-radius: 10px;
+}
+
+.horizontal-category-list::-webkit-scrollbar-thumb {
+    background-color: #FFB5D8; /* Thumb color */
+    border-radius: 10px;
+    border: 2px solid #F9F0F7; /* Padding around thumb */
+}
+
+.category-card-horizontal {
+    flex: 0 0 200px; /* Prevent shrinking, set base width */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.category-card-horizontal:hover {
+    transform: translateY(-5px);
+}
+
+.category-image-circular {
+    position: relative;
+    width: 140px; /* Size of the circular image area */
+    height: 140px; /* Size of the circular image area */
+    border-radius: 50%; /* Make it circular */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F9F0F7; /* Background behind the image */
+    margin-bottom: 0.5rem; /* Keep original margin below image */
+    margin-top: 0.25rem; /* Add small margin above image */
+}
+
+.category-image-circular img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure image covers the circular area */
+}
+
+.category-card-horizontal h3 {
+    font-size: 1.2rem; /* Adjust heading size */
+    color: #7D5E7A;
+    margin-bottom: 0.5rem;
+}
+
+.category-card-horizontal p {
+    font-size: 0.85rem; /* Adjust description size */
+    color: #9A7B97;
+    margin-bottom: 1rem;
+}
+
+.category-card-horizontal .view-all-button {
+    display: inline-block;
+    background-color: #FFB5D8; /* Button color */
+    color: #7D5E7A; /* Button text color */
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.category-card-horizontal .view-all-button:hover {
+    background-color: #E8D5E4; /* Hover color */
+}
+
+/* New styles for horizontal scrollable category list */
+.horizontal-scroll-container {
+    position: relative;
+    padding: 0; /* Remove padding from this container */
+    overflow: hidden; /* Ensure no unexpected overflow */
+}
+
+.horizontal-category-list {
+    display: flex;
+    overflow-x: scroll; /* Enable horizontal scrolling */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none;  /* Hide scrollbar for Internet Explorer and Edge */
+    scroll-behavior: smooth; /* Smooth scrolling */
+    gap: 1.5rem; /* Space between cards */
+    padding-bottom: 1rem; /* Add some padding below */
+    padding: 0 4rem; /* Add padding here to make space for buttons */
+}
+
+.horizontal-category-list::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.category-card-scrollable {
+    flex: 0 0 200px; /* Prevent shrinking, set base width of the card */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem; /* Reduced padding */
+    text-align: center;
+    transition: transform 0.3s ease;
+    text-decoration: none; /* Remove underline from link */
+}
+
+.category-card-scrollable:hover {
+    transform: translateY(-5px);
+}
+
+.category-card-scrollable h3 {
+    /* Adjusted h3 style for position above image */
+    font-size: 1.2rem; /* Adjust heading size */
+    color: #7D5E7A;
+    margin-bottom: 0.25rem; /* Reduced space below heading */
+}
+
+.category-card-scrollable p {
+    /* Original p style, should not be present in HTML now */
+    font-size: 0.85rem; /* Adjust description size */
+    color: #9A7B97;
+    margin-bottom: 1rem;
+}
+
+.category-card-scrollable .view-all-button {
+    display: inline-block;
+    background-color: #FFB5D8; /* Button color */
+    color: #7D5E7A; /* Button text color */
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.category-card-scrollable .view-all-button:hover {
+    background-color: #E8D5E4; /* Hover color */
+}
+
+.scroll-buttons-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none; /* Allow clicks to pass through this container */
+    z-index: 1000; /* Ensure this container is above the list but below buttons */
+}
+
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001; /* Ensure buttons are above the new container */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    opacity: 0.8; /* Default opacity */
+    pointer-events: auto; /* Re-enable pointer events for the buttons */
+}
+
+.scroll-button:hover {
+    background-color: rgba(255, 255, 255, 1);
+    opacity: 1; /* Full opacity on hover */
+}
+
+.scroll-button i {
+    font-size: 1.5rem;
+    color: #7D5E7A; /* Icon color */
+}
+
+.scroll-button.left {
+    left: 0.5rem; /* Position relative to the new container */
+}
+
+.scroll-button.right {
+    right: 0.5rem; /* Position relative to the new container */
+}
+</style>
+
+<!-- Hero Section -->
+<div class="hero-bg w-full relative min-h-[500px]" style="background-image: url('{{ url_for('static', filename='images/Untitled design (32).png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+<div class="w-full md:w-1/2">
+</div>
+</div>
+<!-- Decorative Flowers -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="floating-flowers" style="left: 10%; animation-delay: 0s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 25%; animation-delay: 2s; background-color: #FFF4D2; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 40%; animation-delay: 5s; background-color: #D4F1F4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 65%; animation-delay: 3s; background-color: #E8D5E4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 80%; animation-delay: 7s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 95%; animation-delay: 1s; background-color: #FFF4D2; border-radius: 50%"></div>
+</div>
+</div>
+
+{# Bestsellers Section #}
+{% if bestsellers %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" style="background-image: url('https://readdy.ai/api/search-image?query=extremely%2520soft%2520and%2520blurry%2520miniature%2520flowers%2520scattered%2520across%2520a%2520pure%2520white%2520background%252C%2520creating%2520a%2520very%2520subtle%2520and%2520delicate%2520pattern.%2520The%2520flowers%2520are%2520in%2520pastel%2520lilac%252C%2520pink%252C%2520and%2520blue%2520tones%252C%2520barely%2520visible%2520and%2520creating%2520an%2520ethereal%252C%2520dreamy%2520effect.%2520The%2520overall%2520look%2520is%2520very%2520light%2520and%2520airy%2520with%2520minimal%2520contrast&width=1200&height=600&seq=3&orientation=landscape'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Our Bestsellers ✨</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Discover our most loved items that are making everyone's day a little brighter and cuter!</p>
+</div>
+<div class="flex flex-col md:flex-row gap-8">
+  <!-- Large Image (Left) -->
+  <div class="md:w-2/3 relative overflow-hidden rounded-lg shadow-lg group">
+    <img src="{{ url_for('static', filename='images/Untitled design (33).png') }}" alt="Featured Products 1" class="w-11/12 h-11/12 object-cover transition-transform duration-500 group-hover:scale-105 mx-auto my-auto">
+    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div class="flex flex-col items-start">
+        <p class="text-white text-base font-semibold mb-2">Discover These Cute Items</p>
+        <a href="{{ url_for('featured_collection', product_ids_str='112,228') }}" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
+      </div>
+    </div>
+  </div>
+  <!-- Small Images (Right Stack) -->
+  <div class="md:w-1/3 flex flex-col gap-8">
+    <!-- Small Image 1 -->
+    <div class="relative overflow-hidden rounded-lg shadow-lg group">
+      <img src="{{ url_for('static', filename='images/download (89).jpeg') }}" alt="Featured Products 2" class="w-11/12 h-11/12 object-cover transition-transform duration-500 group-hover:scale-105 mx-auto my-auto" style="aspect-ratio: 4/5;">
+      <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div class="flex flex-col items-start">
+          <p class="text-white text-base font-semibold mb-2">Discover These Cute Items</p>
+          <a href="{{ url_for('featured_collection', product_ids_str='224,225,39') }}" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
+        </div>
+      </div>
+    </div>
+    <!-- Small Image 2 -->
+    <div class="relative overflow-hidden rounded-lg shadow-lg group">
+      <img src="{{ url_for('static', filename='images/Papeterie de mariage.jpeg') }}" alt="Featured Products 3" class="w-11/12 h-11/12 object-cover transition-transform duration-500 group-hover:scale-105 mx-auto my-auto" style="aspect-ratio: 4/5;">
+      <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div class="flex flex-col items-start">
+          <p class="text-white text-base font-semibold mb-2">Discover These Cute Items</p>
+          <a href="{{ url_for('featured_collection', product_ids_str='226,227,204,207') }}" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endif %}
+
+<!-- Shop by Category -->
+<div class="floating-flower-bg py-8"> {# Adjusted padding #}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start md:space-x-1"> <!-- Even further reduced space-x -->
+            <div class="text-center mb-8 md:w-1/4"> {# Adjusted margin and added width for medium screens #}
+                <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Shop by Category 🌷</h2> {# Adjusted margin #}
+                <p class="text-[#9A7B97] max-w-2xl mx-auto">Find your perfect cute accessory by browsing our adorable categories!</p>
+            </div>
+
+            {# Horizontal Scroll Container #}
+            <div class="horizontal-scroll-container flex-1"> <!-- Added flex-1 to make it take remaining space -->
+                <div class="horizontal-category-list" id="categoryList">
+                    {# Categories based on user input #}
+                    <a href="/category/Phone%20Cases" class="category-card-scrollable">
+                        <h3>Phone Cases</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250521124423955.png') }}" alt="Phone Cases">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Mouse%20Pads" class="category-card-scrollable">
+                        <h3>Mouse Pads</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250523191726262.png') }}" alt="Mouse Pads">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Candles" class="category-card-scrollable">
+                        <h3>Candles</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/29423600-37F7-46B8-AF71-C131D0A9DBFC.jpg') }}" alt="Candles">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Bags" class="category-card-scrollable">
+                        <h3>Bags</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250521141802067.png') }}" alt="Bags">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Glass%20Tumblers" class="category-card-scrollable">
+                        <h3>Glass Tumblers</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250523221933022.png') }}" alt="Glass Tumblers">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Nails" class="category-card-scrollable">
+                        <h3>Nails</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250521235513709.png') }}" alt="Nails">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Accessories" class="category-card-scrollable">
+                        <h3>Accessories</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250529171314631.png') }}" alt="Accessories">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Decors" class="category-card-scrollable">
+                        <h3>Decors</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="Decors">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                    <a href="/category/Stationary" class="category-card-scrollable">
+                        <h3>Stationary</h3>
+                        <div class="category-image-circular">
+                            <img src="{{ url_for('static', filename='images/20250530144334466.png') }}" alt="Stationary">
+                        </div>
+                        <span class="view-all-button">View All</span>
+                    </a>
+                </div>
+                {# Scroll Buttons #}
+                <div class="scroll-buttons-container">
+                    <button class="scroll-button left"><i class="ri-arrow-left-s-line"></i></button>
+                    <button class="scroll-button right"><i class="ri-arrow-right-s-line"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if new_arrivals %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" style="background-image: url('https://readdy.ai/api/search-image?query=extremely%2520soft%2520and%2520blurry%2520miniature%2520flowers%2520scattered%2520across%2520a%2520pure%2520white%2520background%252C%2520creating%2520a%2520very%2520subtle%2520and%2520delicate%2520pattern.%2520The%2520flowers%2520are%2520in%2520pastel%2520lilac%252C%2520pink%252C%2520and%2520blue%2520tones%252C%2520barely%2520visible%2520and%2520creating%2520an%2520ethereal%252C%2520dreamy%2520effect.%2520The%2520overall%2520look%2520is%2520very%2520light%2520and%2520airy%2520with%2520minimal%2520contrast&width=1200&height=600&seq=3&orientation=landscape'); background-size: cover; background-position: center;">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">New Arrivals 🌸</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Check out our latest cute additions to the Lush Lilac family!</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {% for product in new_arrivals %}
+    <div class="category-card flex flex-col items-center">
+         <a href="/product/{{ product.id }}">
+            <div class="product-oval-container w-48 h-56 bg-[#F9F0F7] rounded-full flex items-center justify-center overflow-hidden mb-4 mx-auto">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" class="h-full w-full object-cover">
+                {% endif %}
+            </div>
+        </a>
+        <div class="text-center w-full">
+            <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+            <div class="flex justify-center items-center mt-2 space-x-2">
+                <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                 {% if current_user.is_authenticated %}
+                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                    <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                </button>
+                {% endif %}
+                {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
+                    <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
+                        <i class="ri-shopping-bag-line"></i>
+                    </a>
+                {% else %}
+                    <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
+                        <i class="ri-shopping-bag-line"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endif %}
+<!-- Newsletter -->
+<div class="bg-[#F9F0F7] py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-white rounded-lg p-8 md:p-12 shadow-sm">
+<div class="text-center mb-8">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Join Our Cute Community 🌸</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Subscribe to our newsletter for exclusive offers, cute updates, and first access to new releases!</p>
+</div>
+<div class="max-w-md mx-auto relative">
+<div class="flex">
+<input type="email" placeholder="Your email address" class="cute-input flex-1 py-3 px-4 rounded-l-button text-[#7D5E7A]">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-3 rounded-r-button font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Subscribe
+</button>
+</div>
+<div class="absolute -right-28 top-1/2 transform -translate-y-1/2 w-20 h-20" style="background-image: url('https://readdy.ai/api/search-image?query=cute%20purple%20gift%20box%20with%20pastel%20pink%20ribbon%20bow%20on%20top%2C%20soft%20lighting%2C%20delicate%20details%2C%203D%20rendered%2C%20centered%20composition%20on%20pure%20white%20background&width=200&height=200&seq=5&orientation=squarish'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    console.log('Script tag started at end of body'); // This line and the rest of your script
+    // JavaScript for horizontal category scrolling
+    const categoryList = document.getElementById('categoryList');
+
+    function scrollCategories(scrollOffset) {
+        if (categoryList) {
+            console.log('Scrolling category list by:', scrollOffset);
+            categoryList.scrollBy({ left: scrollOffset, behavior: 'smooth' });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded fired');
+        setTimeout(function() {
+            console.log('Inside setTimeout after DOMContentLoaded');
+            const leftScrollButton = document.querySelector('.scroll-button.left');
+            const rightScrollButton = document.querySelector('.scroll-button.right');
+
+            console.log('Right scroll button element:', rightScrollButton);
+
+            if (leftScrollButton) {
+                leftScrollButton.addEventListener('click', function() {
+                    console.log('Left scroll button clicked');
+                    scrollCategories(-250);
+                });
+                console.log('Left scroll button found and listener attached');
+            }
+
+            if (rightScrollButton) {
+                rightScrollButton.addEventListener('click', function() {
+                    console.log('Right scroll button click handler started');
+                    console.log('Right scroll button clicked');
+                    scrollCategories(250);
+                });
+                console.log('Right scroll button found and listener attached');
+            } else {
+                console.log('Right scroll button not found');
+            }
+        }, 100);
+    });
+
+    // Second listener test
+    console.log('Attempting to add second listener');
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const rightButtonTest = document.querySelector('.scroll-button.right');
+            console.log('Second listener target found:', rightButtonTest);
+            if (rightButtonTest) {
+                rightButtonTest.addEventListener('click', function() {
+                    console.log('Second listener: Right scroll button was clicked!');
+                });
+                console.log('Second listener attached to right button');
+            } else {
+                console.log('Second listener target NOT found');
+            }
+        }, 200);
+    });
+</script>
+
+{% endblock %}
+
+
+{# Add any specific scripts for index page here if needed #} 
+

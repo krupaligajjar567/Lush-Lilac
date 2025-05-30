@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">My Wishlist 🌸</h2>
+        <p class="text-[#9A7B97] max-w-2xl mx-auto">All the cute items you've saved for later!</p>
+    </div>
+
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for product in products %}
+        <div class="category-card bg-white rounded-lg overflow-hidden">
+            <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                {% endif %}
+            </div>
+            <div class="p-4">
+                <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                    <div class="flex space-x-2">
+                        <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}" style="color: #E8D5E4;">
+                            <i class="ri-flower-fill"></i>
+                        </button>
+                        <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+                            <i class="ri-shopping-bag-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <div class="w-24 h-24 mx-auto mb-4 text-[#E8D5E4]">
+            <i class="ri-flower-line ri-4x"></i>
+        </div>
+        <h3 class="text-xl font-medium text-[#7D5E7A] mb-2">Your wishlist is empty</h3>
+        <p class="text-[#9A7B97] mb-6">Start adding some cute items to your wishlist!</p>
+        <a href="/" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-3 rounded-button font-medium transition-all duration-300 btn-hover inline-block">
+            Browse Products
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

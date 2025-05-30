@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} - Lush Lilac Admin</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9B6B9E',
+                        secondary: '#FFB5D8'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FFF9FD;
+        }
+        .gradient-border {
+            position: relative;
+            border-radius: 12px;
+            background: white;
+        }
+        .gradient-border::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            z-index: -1;
+            border-radius: 14px;
+            background: linear-gradient(45deg, #FFB5D8, #9B6B9E, #E8D5E4);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(155, 107, 158, 0.1), 0 4px 6px -2px rgba(155, 107, 158, 0.05);
+        }
+        .notification-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #FF6B6B;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{{ url_for('admin_dashboard') }}" class="font-semibold text-xl text-primary">Admin Dashboard</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                     {# Notification Button #}
+                    <div class="relative">
+                        <button class="text-primary hover:text-[#D4B6D0] p-2 rounded-full bg-[#F9F0F7]">
+                            <i class="ri-notification-4-line text-lg"></i>
+                             {# Example notification dot - implement logic to show/hide #}
+                             {# <span class="notification-dot"></span> #}
+                        </button>
+                    </div>
+                    {% if current_user.is_authenticated %}
+                        <span class="text-primary">Welcome, {{ current_user.username }}</span>
+                         <a href="{{ url_for('admin_orders') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                            <i class="ri-shopping-bag-line mr-2"></i>All Orders
+                        </a>
+                         <a href="{{ url_for('admin_add_product') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                            <i class="ri-add-line mr-2"></i>Add Product
+                        </a>
+                         <a href="{{ url_for('admin_bestsellers') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                            <i class="ri-star-line mr-2"></i>Bestsellers
+                        </a>
+                        <a href="{{ url_for('admin_new_arrivals') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                            <i class="ri-sparkling-line mr-2"></i>New Arrivals
+                        </a>
+                        <a href="{{ url_for('logout') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                            <i class="ri-logout-box-line mr-2"></i>Logout
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+     <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative flash-message" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block admin_content %}
+        {# Page specific content will be inserted here #}
+        {% endblock %}
+    </div>
+
+    {# Include common scripts here if needed #}
+     <script>
+        // Flash message auto-hide
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            });
+        });
+    </script>
+
+</body>
+</html> 

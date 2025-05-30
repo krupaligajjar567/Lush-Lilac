@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - All Orders | Lush Lilac</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9B6B9E',
+                        secondary: '#FFB5D8'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FFF9FD;
+        }
+        .status-pending {
+            background-color: #fff7e6;
+            color: #b37400;
+        }
+        .status-processing {
+            background-color: #e6f7ff;
+            color: #0062cc;
+        }
+        .status-shipped {
+            background-color: #e6f6ff;
+            color: #0050b3;
+        }
+        .status-delivered {
+            background-color: #e6ffe6;
+            color: #137a13;
+        }
+        .status-cancelled {
+            background-color: #ffe6e6;
+            color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/admin/dashboard" class="font-semibold text-xl text-primary">Admin Dashboard</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/admin/dashboard" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                        <i class="ri-dashboard-line mr-1"></i>Dashboard
+                    </a>
+                    <a href="/admin/add_product" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                        <i class="ri-shopping-bag-line mr-1"></i>Products
+                    </a>
+                    <a href="/admin/orders" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium font-bold">
+                        <i class="ri-shopping-cart-line mr-1"></i>Orders
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                        <i class="ri-logout-box-line mr-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative flash-message" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-primary">Order Management</h2>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h3 class="text-xl font-semibold text-primary mb-4">Filter Orders</h3>
+            <form method="GET" action="{{ url_for('admin_orders') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#7D5E7A] mb-2">Date From</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-calendar-line text-gray-400"></i>
+                        </div>
+                        <input type="date" name="date_from" value="{{ request.args.get('date_from', '') }}" 
+                            class="w-full pl-10 px-4 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#7D5E7A] mb-2">Date To</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-calendar-line text-gray-400"></i>
+                        </div>
+                        <input type="date" name="date_to" value="{{ request.args.get('date_to', '') }}" 
+                            class="w-full pl-10 px-4 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#7D5E7A] mb-2">Product</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-search-line text-gray-400"></i>
+                        </div>
+                        <input type="text" name="product" value="{{ request.args.get('product', '') }}" placeholder="Search by product name" 
+                            class="w-full pl-10 px-4 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#7D5E7A] mb-2">Order Status</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ri-filter-3-line text-gray-400"></i>
+                        </div>
+                        <select name="status" class="w-full pl-10 px-4 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4] appearance-none">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if request.args.get('status') == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="shipped" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Shipped</option>
+                            <option value="delivered" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="cancelled" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="ri-arrow-down-s-line text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-end md:col-span-4 gap-2">
+                    <button type="submit" class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button font-medium transition-all duration-300 flex items-center">
+                        <i class="ri-filter-3-line mr-1"></i> Apply Filters
+                    </button>
+                    <a href="{{ url_for('admin_orders') }}" class="px-4 py-2 border border-[#E8D5E4] text-[#7D5E7A] rounded-button hover:bg-[#F9F0F7] transition-all duration-300 flex items-center">
+                        <i class="ri-refresh-line mr-1"></i> Reset
+                    </a>
+                    
+                    <div class="ml-auto flex gap-2">
+                        <button type="button" class="px-4 py-2 bg-[#F9F0F7] text-primary rounded-button hover:bg-[#E8D5E4] transition-all duration-300 flex items-center">
+                            <i class="ri-file-excel-line mr-1"></i> Export
+                        </button>
+                        <button type="button" class="px-4 py-2 bg-[#F9F0F7] text-primary rounded-button hover:bg-[#E8D5E4] transition-all duration-300 flex items-center">
+                            <i class="ri-printer-line mr-1"></i> Print
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Filter Buttons -->
+                <div class="md:col-span-4 flex flex-wrap gap-2 mt-2">
+                    <button type="button" onclick="quickFilter('today')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Today
+                    </button>
+                    <button type="button" onclick="quickFilter('yesterday')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Yesterday
+                    </button>
+                    <button type="button" onclick="quickFilter('last7days')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Last 7 days
+                    </button>
+                    <button type="button" onclick="quickFilter('last30days')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Last 30 days
+                    </button>
+                    <button type="button" onclick="quickFilter('pending')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Pending Orders
+                    </button>
+                    <button type="button" onclick="quickFilter('processing')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Processing Orders
+                    </button>
+                    <button type="button" onclick="quickFilter('shipped')" class="px-3 py-1 text-sm bg-[#F9F0F7] text-primary rounded-full hover:bg-[#E8D5E4] transition-all duration-300">
+                        Shipped Orders
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-xl font-semibold text-primary mb-4">All Orders ({{ orders|length }})</h3>
+            
+            {% if orders %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for order in orders %}
+                        <tr>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">#{{ order.id }}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ order.user.username }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-900">
+                                {% for item in order.items %}
+                                <div class="mb-1">{{ item.product_name }} × {{ item.quantity }}</div>
+                                {% endfor %}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-{{ order.status }}">
+                                    {{ order.status|title }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm space-x-2">
+                                <button onclick="openOrderDetails({{ order.id }})" class="text-primary hover:text-[#D4B6D0] bg-[#F9F0F7] px-2 py-1 rounded">
+                                    <i class="ri-eye-line mr-1"></i> View
+                                </button>
+                                <button onclick="openUpdateStatus({{ order.id }}, '{{ order.status }}')" class="text-[#0062cc] hover:text-[#0050b3] bg-[#e6f7ff] px-2 py-1 rounded">
+                                    <i class="ri-edit-line mr-1"></i> Update
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="py-8 text-center text-gray-500">
+                <i class="ri-shopping-bag-line text-5xl mb-4"></i>
+                <p>No orders found matching your criteria</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-primary" id="orderTitle">Order Details</h2>
+                <button onclick="closeOrderDetails()" class="text-gray-500 hover:text-gray-700">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+            <div id="orderDetailsContent" class="space-y-6">
+                <!-- Content will be loaded via JavaScript -->
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
+                    <div class="h-64 bg-gray-200 rounded mb-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div id="updateStatusModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-primary">Update Order Status</h2>
+                <button onclick="closeUpdateStatus()" class="text-gray-500 hover:text-gray-700">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+            <form id="updateStatusForm" method="POST" action="" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#7D5E7A] mb-2">Current Status</label>
+                    <div id="currentStatus" class="px-3 py-2 border border-[#E8D5E4] rounded-lg bg-gray-50"></div>
+                </div>
+                <div>
+                    <label for="newStatus" class="block text-sm font-medium text-[#7D5E7A] mb-2">New Status</label>
+                    <select id="newStatus" name="status" class="w-full px-3 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]" required>
+                        <option value="">Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="trackingNumber" class="block text-sm font-medium text-[#7D5E7A] mb-2">Tracking Number (optional)</label>
+                    <input type="text" id="trackingNumber" name="tracking_number" class="w-full px-3 py-2 border border-[#E8D5E4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]" placeholder="Enter tracking number">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeUpdateStatus()" 
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-button font-medium transition-all duration-300">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button font-medium transition-all duration-300">
+                        Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Flash message auto-hide
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 5000);
+            });
+        });
+
+        // Order Details Modal
+        function openOrderDetails(orderId) {
+            const modal = document.getElementById('orderDetailsModal');
+            const content = document.getElementById('orderDetailsContent');
+            const title = document.getElementById('orderTitle');
+            
+            // Show loading state
+            modal.classList.remove('hidden');
+            content.innerHTML = `
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
+                    <div class="h-64 bg-gray-200 rounded mb-4"></div>
+                </div>
+            `;
+            
+            // Fetch order details
+            fetch(`/admin/order/${orderId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        title.textContent = `Order #${orderId} Details`;
+                        
+                        let statusClass = '';
+                        switch(data.order.status) {
+                            case 'pending': statusClass = 'status-pending'; break;
+                            case 'processing': statusClass = 'status-processing'; break;
+                            case 'shipped': statusClass = 'status-shipped'; break;
+                            case 'delivered': statusClass = 'status-delivered'; break;
+                            case 'cancelled': statusClass = 'status-cancelled'; break;
+                        }
+                        
+                        // Format order items
+                        const items = data.order.items.map(item => `
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <div class="flex-1">
+                                    <div class="font-medium">${item.product_name}</div>
+                                    ${item.model ? `<div class="text-sm text-gray-500">Model: ${item.model}</div>` : ''}
+                                </div>
+                                <div class="text-sm text-gray-500">x${item.quantity}</div>
+                                <div class="font-medium">₹${parseFloat(item.price).toFixed(2)}</div>
+                            </div>
+                        `).join('');
+                        
+                        content.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-medium text-[#7D5E7A] mb-3">Customer Information</h3>
+                                    <div class="p-4 bg-[#F9F0F7] rounded-lg">
+                                        <div class="mb-2"><span class="font-medium">Name:</span> ${data.order.customer_name}</div>
+                                        <div class="mb-2"><span class="font-medium">Email:</span> ${data.order.email}</div>
+                                        <div class="mb-2"><span class="font-medium">Phone:</span> ${data.order.phone}</div>
+                                        <div class="mb-2"><span class="font-medium">Address:</span><br>${data.order.address.replace(/\\n/g, '<br>')}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-medium text-[#7D5E7A] mb-3">Order Information</h3>
+                                    <div class="p-4 bg-[#F9F0F7] rounded-lg">
+                                        <div class="mb-2"><span class="font-medium">Order Date:</span> ${data.order.order_date}</div>
+                                        <div class="mb-2"><span class="font-medium">Order Status:</span> 
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                                ${data.order.status.charAt(0).toUpperCase() + data.order.status.slice(1)}
+                                            </span>
+                                        </div>
+                                        <div class="mb-2"><span class="font-medium">Payment Method:</span> ${data.order.payment_method}</div>
+                                        <div class="mb-2"><span class="font-medium">Payment Status:</span> ${data.order.payment_status}</div>
+                                        ${data.order.tracking_number ? `<div class="mb-2"><span class="font-medium">Tracking Number:</span> ${data.order.tracking_number}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-[#7D5E7A] mb-3">Order Items</h3>
+                                <div class="p-4 bg-[#F9F0F7] rounded-lg">
+                                    <div class="space-y-1">
+                                        ${items}
+                                    </div>
+                                    <div class="flex justify-between pt-4 border-t border-gray-200 mt-4 font-medium">
+                                        <span>Total</span>
+                                        <span>₹${parseFloat(data.order.total_amount).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end pt-4">
+                                <button onclick="openUpdateStatus(${orderId}, '${data.order.status}')" 
+                                    class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button font-medium transition-all duration-300">
+                                    Update Status
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = `<div class="text-red-500">Error: ${data.message || 'Failed to load order details'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    content.innerHTML = `<div class="text-red-500">Error: ${error.message || 'An unexpected error occurred'}</div>`;
+                });
+        }
+
+        function closeOrderDetails() {
+            document.getElementById('orderDetailsModal').classList.add('hidden');
+        }
+
+        // Update Status Modal
+        function openUpdateStatus(orderId, currentStatus) {
+            const modal = document.getElementById('updateStatusModal');
+            const form = document.getElementById('updateStatusForm');
+            const statusElement = document.getElementById('currentStatus');
+            const statusSelect = document.getElementById('newStatus');
+            
+            statusElement.textContent = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+            statusSelect.value = '';  // Reset selection
+            
+            // Set form action
+            form.action = `/admin/order/${orderId}/update`;
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        }
+
+        function closeUpdateStatus() {
+            document.getElementById('updateStatusModal').classList.add('hidden');
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const orderModal = document.getElementById('orderDetailsModal');
+            const orderModalContent = orderModal.querySelector('.bg-white');
+            
+            const statusModal = document.getElementById('updateStatusModal');
+            const statusModalContent = statusModal.querySelector('.bg-white');
+            
+            if (event.target === orderModal && !orderModalContent.contains(event.target)) {
+                closeOrderDetails();
+            }
+            
+            if (event.target === statusModal && !statusModalContent.contains(event.target)) {
+                closeUpdateStatus();
+            }
+        });
+
+        // Quick filter function
+        function quickFilter(filterType) {
+            const form = document.querySelector('form');
+            const dateFromInput = form.querySelector('[name="date_from"]');
+            const dateToInput = form.querySelector('[name="date_to"]');
+            const statusSelect = form.querySelector('[name="status"]');
+            
+            const today = new Date();
+            
+            // Reset all inputs
+            if (!['pending', 'processing', 'shipped'].includes(filterType)) {
+                statusSelect.value = '';
+            }
+            
+            // Set date filters based on selection
+            switch(filterType) {
+                case 'today':
+                    dateFromInput.value = today.toISOString().split('T')[0];
+                    dateToInput.value = today.toISOString().split('T')[0];
+                    break;
+                    
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    dateFromInput.value = yesterday.toISOString().split('T')[0];
+                    dateToInput.value = yesterday.toISOString().split('T')[0];
+                    break;
+                    
+                case 'last7days':
+                    const sevenDaysAgo = new Date(today);
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                    dateFromInput.value = sevenDaysAgo.toISOString().split('T')[0];
+                    dateToInput.value = today.toISOString().split('T')[0];
+                    break;
+                    
+                case 'last30days':
+                    const thirtyDaysAgo = new Date(today);
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    dateFromInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+                    dateToInput.value = today.toISOString().split('T')[0];
+                    break;
+                    
+                case 'pending':
+                    statusSelect.value = 'pending';
+                    break;
+                    
+                case 'processing':
+                    statusSelect.value = 'processing';
+                    break;
+                    
+                case 'shipped':
+                    statusSelect.value = 'shipped';
+                    break;
+            }
+            
+            // Submit the form
+            form.submit();
+        }
+    </script>
+</body>
+</html> 

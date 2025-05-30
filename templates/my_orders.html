@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-8">My Orders 🌸</h2>
+    
+    {% if orders %}
+        {% for order in orders %}
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h5 class="text-lg font-medium text-[#7D5E7A]">Order #{{ order.id }}</h5>
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                        {% if order.status == 'completed' %}
+                            bg-green-100 text-green-800
+                        {% elif order.status == 'pending' %}
+                            bg-yellow-100 text-yellow-800
+                        {% else %}
+                            bg-blue-100 text-blue-800
+                        {% endif %}">
+                        {{ order.status|title }}
+                    </span>
+                </div>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <p class="text-[#7D5E7A]">
+                            <span class="font-medium">Order Date:</span> 
+                            {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                        <p class="text-[#7D5E7A]">
+                            <span class="font-medium">Total Amount:</span> ₹{{ "%.2f"|format(order.total_amount) }}
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h6 class="text-lg font-medium text-[#7D5E7A] mb-4">Order Items:</h6>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-[#F9F0F7]">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Product</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Quantity</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Price</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-[#7D5E7A]">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-[#F9F0F7]">
+                                    {% for item in order.items %}
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm text-[#7D5E7A]">{{ item.product_name }}</td>
+                                        <td class="px-4 py-3 text-sm text-[#7D5E7A]">{{ item.quantity }}</td>
+                                        <td class="px-4 py-3 text-sm text-[#7D5E7A]">${{ "%.2f"|format(item.price) }}</td>
+                                        <td class="px-4 py-3 text-sm text-[#7D5E7A]">${{ "%.2f"|format(item.quantity * item.price) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="bg-[#F9F0F7] rounded-lg p-6 text-center">
+            <p class="text-[#7D5E7A]">You haven't placed any orders yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 
