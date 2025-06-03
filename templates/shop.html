@@ -1,194 +1,499 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="text-center mb-12">
-        <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Shop Our Aesthetic Collection 🌷</h2>
-        <p class="text-[#9A7B97] max-w-2xl mx-auto">Find the perfect blend of functionality and beauty for your everyday life.</p>
-    </div>
-
-    {# Bestsellers Section #}
-    {% if bestsellers %}
-    <div class="mb-16">
-        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">Our Bestsellers ✨ (Showing {{ bestsellers|length }} product(s))</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {% for product in bestsellers %}
-            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                 <a href="/product/{{ product.id }}">
-                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
-                        {% if product.image %}
-                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% else %}
-                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% endif %}
-                    </div>
-                </a>
-                <div class="p-4">
-                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
-                        <div class="flex space-x-2">
-                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
-                            </button>
-                             {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
-                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </a>
-                            {% else %}
-                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# New Arrivals Section #}
-    {% if new_arrivals %}
-    <div class="mb-16">
-        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">New Arrivals 🌸</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {% for product in new_arrivals %}
-            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                 <a href="/product/{{ product.id }}">
-                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
-                        {% if product.image %}
-                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% else %}
-                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% endif %}
-                    </div>
-                </a>
-                <div class="p-4">
-                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
-                        <div class="flex space-x-2">
-                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
-                            </button>
-                            {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
-                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </a>
-                            {% else %}
-                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# All Products Section #}
-    {% if all_products %}
-    <div>
-        <h3 class="text-2xl font-semibold text-[#7D5E7A] mb-6">All Products ✨</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {% for product in all_products %}
-            <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                 <a href="/product/{{ product.id }}">
-                    <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
-                        {% if product.image %}
-                        <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% else %}
-                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
-                        {% endif %}
-                    </div>
-                </a>
-                <div class="p-4">
-                    <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
-                         <div class="flex space-x-2">
-                            <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
-                                <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
-                            </button>
-                            {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
-                                <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </a>
-                            {% else %}
-                                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
-                                    <i class="ri-shopping-bag-line"></i>
-                                </button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    {# Message if no products are found #}
-    {% if not bestsellers and not new_arrivals and not all_products %}
-    <div class="bg-[#F9F0F7] rounded-lg p-6 text-center">
-        <p class="text-[#7D5E7A]">No products found. Check back soon!</p>
-    </div>
-    {% endif %}
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lush Lilac - Cute & Pretty Accessories</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#9B6B9E',secondary:'#FFB5D8'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Quicksand', sans-serif;
+background-color: #FFF9FD;
+}
+.plaid-bg {
+background-image:
+linear-gradient(rgba(155, 107, 158, 0.7) 1px, transparent 1px),
+linear-gradient(90deg, rgba(155, 107, 158, 0.7) 1px, transparent 1px);
+background-size: 20px 20px;
+}
+.floating-flower-bg {
+position: relative;
+background-color: #E6D5F2;
+overflow: hidden;
+}
+.mini-flower {
+position: absolute;
+width: 20px;
+height: 20px;
+pointer-events: none;
+animation: floatFlower 20s linear infinite;
+opacity: 0.6;
+background-size: contain;
+background-repeat: no-repeat;
+}
+@keyframes floatFlower {
+0% {
+transform: translateY(100%) rotate(0deg);
+opacity: 0;
+}
+10% {
+opacity: 0.6;
+}
+90% {
+opacity: 0.6;
+}
+100% {
+transform: translateY(-100%) rotate(360deg);
+opacity: 0;
+}
+}
+.flower-wishlist {
+position: relative;
+transition: all 0.3s ease;
+}
+.flower-wishlist:hover {
+transform: scale(1.1);
+}
+.category-card {
+transition: all 0.3s ease;
+box-shadow: 0 4px 15px rgba(232, 213, 228, 0.3);
+}
+.category-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 25px rgba(232, 213, 228, 0.5);
+}
+.btn-hover:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(232, 213, 228, 0.5);
+}
+.floating-flowers {
+position: absolute;
+width: 20px;
+height: 20px;
+pointer-events: none;
+animation: float 15s linear infinite;
+opacity: 0.7;
+}
+@keyframes float {
+0% {
+transform: translateY(0) rotate(0deg);
+opacity: 0;
+}
+10% {
+opacity: 0.7;
+}
+100% {
+transform: translateY(-100vh) rotate(360deg);
+opacity: 0;
+}
+}
+.hero-bg {
+background-image: url('https://readdy.ai/api/search-image?query=soft%2520lilac%2520background%2520with%2520delicate%2520plaid%2520pattern%2520and%2520scattered%2520tiny%2520bows%2520and%2520miniature%2520pastel%2520flowers.%2520The%2520left%2520side%2520is%2520lighter%2520and%2520clearer%2520for%2520text%2520placement%2C%2520while%2520the%2520right%2520side%2520has%2520more%2520decorative%2520elements.%2520The%2520overall%2520aesthetic%2520is%2520soft%2C%2520dreamy%2520and%2520feminine%2520with%2520a%2520pastel%2520color%2520palette.&width=1200&height=600&seq=1&orientation=landscape');
+background-size: cover;
+background-position: center;
+}
+.cute-input {
+background-color: rgba(255, 255, 255, 0.8);
+border: 2px solid #FFE4E1;
+transition: all 0.3s ease;
+}
+.cute-input:focus {
+border-color: #E8D5E4;
+box-shadow: 0 0 10px rgba(232, 213, 228, 0.5);
+outline: none;
+}
+.flower-cursor {
+cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23E8D5E4' d='M12,2C6.5,2,2,6.5,2,12s4.5,10,10,10s10-4.5,10-10S17.5,2,12,2z M12,20c-4.4,0-8-3.6-8-8s3.6-8,8-8s8,3.6,8,8S16.4,20,12,20z'/%3E%3Cpath fill='%23FFE4E1' d='M12,6c-3.3,0-6,2.7-6,6s2.7,6,6,6s6-2.7,6-6S15.3,6,12,6z M12,16c-2.2,0-4-1.8-4-4s1.8-4,4-4s4,1.8,4,4S14.2,16,12,16z'/%3E%3Cpath fill='%23FFF4D2' d='M12,8c-2.2,0-4,1.8-4,4s1.8,4,4,4s4-1.8,4-4S14.2,8,12,8z M12,14c-1.1,0-2-0.9-2-2s0.9-2,2-2s2,0.9,2,2S13.1,14,12,14z'/%3E%3C/svg%3E"), auto;
+}
+</style>
+</head>
+<body class="flower-cursor">
+<!-- Navigation -->
+<nav class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex justify-between items-center h-16">
+<div class="flex-shrink-0 flex items-center">
+<span class="font-['Pacifico'] text-3xl text-primary">Lush Lilac</span>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add to Cart button logic
-    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.dataset.productId;
-            // For simple products, directly add to cart with quantity 1 and empty model
-            fetch(`/update_cart/${productId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'add', quantity: 1, model: '' })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Added to cart!');
-                    // Optionally update cart count display
-                    // document.getElementById('cart-count').textContent = data.cart_count;
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error adding to cart:', error);
-                alert('An error occurred while adding to cart.');
-            });
-        });
-    });
+<div class="hidden md:block">
+<div class="ml-10 flex items-center space-x-8">
+<a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Home</a>
+<a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Shop</a>
+<a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">New Arrivals</a>
+<a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">About</a>
+<a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Contact</a>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<div class="relative">
+<input type="text" placeholder="Search..." class="cute-input py-2 pl-10 pr-4 rounded-full text-sm w-40 md:w-64">
+<div class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center text-primary">
+<i class="ri-search-line"></i>
+</div>
+</div>
+<div class="flower-wishlist w-8 h-8 flex items-center justify-center text-primary">
+<i class="ri-flower-line ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center text-primary">
+<i class="ri-shopping-bag-line ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center text-primary">
+<i class="ri-user-line ri-lg"></i>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<div class="hero-bg w-full relative">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+<div class="w-full md:w-1/2">
+<h1 class="text-4xl md:text-5xl font-semibold text-[#7D5E7A] mb-4">Welcome to Lush Lilac 🌸</h1>
+<p class="text-xl md:text-2xl text-[#9A7B97] mb-8">Where Everything is Pretty & Precious 🌷</p>
+<p class="text-[#9A7B97] mb-8 max-w-md">Discover our adorable collection of phone cases, mouse pads, mirrors, tumblers, and candles - all designed to bring a touch of cuteness to your everyday life! 🌼</p>
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-8 py-3 rounded-button font-medium transition-all duration-300 btn-hover flex items-center whitespace-nowrap">
+Shop Now
+<i class="ri-arrow-right-line ml-2"></i>
+</button>
+</div>
+</div>
+<!-- Decorative Flowers -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="floating-flowers" style="left: 10%; animation-delay: 0s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 25%; animation-delay: 2s; background-color: #FFF4D2; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 40%; animation-delay: 5s; background-color: #D4F1F4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 65%; animation-delay: 3s; background-color: #E8D5E4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 80%; animation-delay: 7s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 95%; animation-delay: 1s; background-color: #FFF4D2; border-radius: 50%"></div>
+</div>
+</div>
+<!-- Featured Products -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" style="background-image: url('https://readdy.ai/api/search-image?query=extremely%20soft%20gradient%20background%20transitioning%20from%20very%20light%20pink%20to%20light%20blue%2C%20decorated%20with%20tiny%2C%20blurred%20bows%20and%20hearts%20scattered%20throughout.%20The%20pattern%20is%20very%20subtle%20and%20dreamy%2C%20creating%20an%20ethereal%20and%20delicate%20atmosphere.%20The%20hearts%20and%20bows%20are%20semi-transparent%20and%20barely%20visible%2C%20floating%20in%20a%20dreamy%20manner%20across%20the%20gentle%20gradient&width=1200&height=600&seq=4&orientation=landscape'); background-size: cover; background-position: center;">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Our Bestsellers 🌟</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Discover our most loved items that are making everyone's day a little brighter and cuter!</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+<div class="category-card bg-white rounded-lg overflow-hidden">
+    <img src="{{ url_for('static', filename='images/Untitled design (35).png') }}" alt="Bestseller Product" class="w-full h-64 object-cover">
+<div class="p-4">
+<p class="text-[#9A7B97] text-sm mb-2">Find your new favorite!</p>
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover mb-4">Shop Now</button>
+<h3 class="text-[#7D5E7A] font-medium">Floral Phone Case</h3>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[#9A7B97] font-medium">$19.99</span>
+<div class="flex space-x-2">
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-shopping-bag-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<img src="static/images/Papeterie de mariage.jpeg" alt="Bestseller Product" class="w-full h-64 object-cover">
+<div class="p-4">
+<p class="text-[#9A7B97] text-sm mb-2">Find your new favorite!</p>
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover mb-4">Shop Now</button>
+<h3 class="text-[#7D5E7A] font-medium">Pastel Mouse Pad</h3>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[#9A7B97] font-medium">$14.99</span>
+<div class="flex space-x-2">
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-shopping-bag-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<img src="static/images/download (89).jpeg" alt="Bestseller Product" class="w-full h-64 object-cover">
+<div class="p-4">
+<p class="text-[#9A7B97] text-sm mb-2">Find your new favorite!</p>
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover mb-4">Shop Now</button>
+<h3 class="text-[#7D5E7A] font-medium">Flower Mirror</h3>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[#9A7B97] font-medium">$24.99</span>
+<div class="flex space-x-2">
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-shopping-bag-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<img src="static/images/image4.jpeg" alt="Bestseller Product" class="w-full h-64 object-cover">
+<div class="p-4">
+<p class="text-[#9A7B97] text-sm mb-2">Find your new favorite!</p>
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover mb-4">Shop Now</button>
+<h3 class="text-[#7D5E7A] font-medium">Lilac Candle</h3>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[#9A7B97] font-medium">$16.99</span>
+<div class="flex space-x-2">
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-shopping-bag-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-    // Wishlist button logic (assuming you have a separate script for this or will add it)
-    // Example (needs backend endpoint): 
-    // document.querySelectorAll('.wishlist-btn').forEach(function(btn) {
-    //     btn.addEventListener('click', function(e) {
-    //         e.preventDefault();
-    //         const productId = this.dataset.productId;
-    //         fetch(`/add_to_wishlist/${productId}`, { method: 'POST' })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             if (data.success) {
-    //                 alert(data.message);
-    //                 // Toggle icon or update wishlist count
-    //             } else {
-    //                 alert(data.message);
-    //             }
-    //         });
-    //     });
-    // });
-});
-</script>
-{% endblock %} 
+<!-- Shop by Category -->
+<div class="floating-flower-bg py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Shop by Category 🌷</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Find your perfect cute accessory by browsing our adorable categories!</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+<div class="category-card bg-white/90 backdrop-blur-sm rounded-lg p-6 text-center">
+<div class="w-16 h-16 mx-auto mb-4 bg-[#FFB5D8] rounded-full flex items-center justify-center">
+<i class="ri-smartphone-line ri-xl text-[#7D5E7A]"></i>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Phone Cases</h3>
+</div>
+<div class="category-card bg-white rounded-lg p-6 text-center">
+<div class="w-16 h-16 mx-auto mb-4 bg-[#FFF4D2] rounded-full flex items-center justify-center">
+<i class="ri-mouse-line ri-xl text-[#7D5E7A]"></i>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Mouse Pads</h3>
+</div>
+<div class="category-card bg-white rounded-lg p-6 text-center">
+<div class="w-16 h-16 mx-auto mb-4 bg-[#D4F1F4] rounded-full flex items-center justify-center">
+<i class="ri-contrast-2-line ri-xl text-[#7D5E7A]"></i>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Mirrors</h3>
+</div>
+<div class="category-card bg-white rounded-lg p-6 text-center">
+<div class="w-16 h-16 mx-auto mb-4 bg-[#E8D5E4] rounded-full flex items-center justify-center">
+<i class="ri-cup-line ri-xl text-[#7D5E7A]"></i>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Glass Tumblers</h3>
+</div>
+<div class="category-card bg-white/90 backdrop-blur-sm rounded-lg p-6 text-center">
+<div class="w-16 h-16 mx-auto mb-4 bg-[#FFB5D8] rounded-full flex items-center justify-center">
+<i class="ri-fire-line ri-xl text-[#7D5E7A]"></i>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Candles</h3>
+</div>
+</div>
+</div>
+</div>
+<!-- New Arrivals -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" style="background-image: url('https://readdy.ai/api/search-image?query=extremely%20soft%20and%20blurry%20miniature%20flowers%20scattered%20across%20a%20pure%20white%20background%2C%20creating%20a%20very%20subtle%20and%20delicate%20pattern.%20The%20flowers%20are%20in%20pastel%20lilac%2C%20pink%2C%20and%20blue%20tones%2C%20barely%20visible%20and%20creating%20an%20ethereal%2C%20dreamy%20effect.%20The%20overall%20look%20is%20very%20light%20and%20airy%20with%20minimal%20contrast&width=1200&height=600&seq=3&orientation=landscape'); background-size: cover; background-position: center;">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">New Arrivals 🌺</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Check out our latest cute additions to the Lush Lilac family!</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<div class="h-64 bg-[#F9F0F7]"></div>
+<div class="p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="bg-[#FFE4E1] text-[#6BBBFF] px-3 py-1 rounded-full text-xs">New</span>
+<span class="text-[#6BBBFF] font-medium">$22.99</span>
+</div>
+<h3 class="text-[#6BBBFF] font-medium">Butterfly Phone Case</h3>
+<div class="flex justify-between items-center mt-2">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-sm font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Add to Cart
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+</div>
+</div>
+</div>
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<div class="h-64 bg-[#F9F0F7]"></div>
+<div class="p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="bg-[#FFF4D2] text-[#7D5E7A] px-3 py-1 rounded-full text-xs">New</span>
+<span class="text-[#9A7B97] font-medium">$18.99</span>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Floral Mouse Pad</h3>
+<div class="flex justify-between items-center mt-2">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-sm font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Add to Cart
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+</div>
+</div>
+</div>
+<div class="category-card bg-white rounded-lg overflow-hidden">
+<div class="h-64 bg-[#F9F0F7]"></div>
+<div class="p-4">
+<div class="flex justify-between items-center mb-2">
+<span class="bg-[#D4F1F4] text-[#7D5E7A] px-3 py-1 rounded-full text-xs">New</span>
+<span class="text-[#9A7B97] font-medium">$29.99</span>
+</div>
+<h3 class="text-[#7D5E7A] font-medium">Heart-Shaped Mirror</h3>
+<div class="flex justify-between items-center mt-2">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-sm font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Add to Cart
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-flower-line"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Newsletter -->
+<div class="bg-[#F9F0F7] py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-white rounded-lg p-8 md:p-12 shadow-sm">
+<div class="text-center mb-8">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Join Our Cute Community 🌸</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Subscribe to our newsletter for exclusive offers, cute updates, and first access to new releases!</p>
+</div>
+<div class="max-w-md mx-auto relative">
+<div class="flex">
+<input type="email" placeholder="Your email address" class="cute-input flex-1 py-3 px-4 rounded-l-button text-[#7D5E7A]">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-3 rounded-r-button font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Subscribe
+</button>
+</div>
+<div class="absolute -right-28 top-1/2 transform -translate-y-1/2 w-20 h-20" style="background-image: url('https://readdy.ai/api/search-image?query=cute%20purple%20gift%20box%20with%20pastel%20pink%20ribbon%20bow%20on%20top%2C%20soft%20lighting%2C%20delicate%20details%2C%203D%20rendered%2C%20centered%20composition%20on%20pure%20white%20background&width=200&height=200&seq=5&orientation=squarish'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-white pt-16 pb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div>
+<span class="font-['Pacifico'] text-2xl text-primary">Lush Lilac</span>
+<p class="mt-4 text-[#6BBBFF]">Making your everyday life cuter, one accessory at a time! 🌸</p>
+<div class="flex space-x-4 mt-6">
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#F9F0F7] text-primary hover:bg-primary hover:text-white transition-all duration-300">
+<i class="ri-instagram-line"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#F9F0F7] text-primary hover:bg-primary hover:text-white transition-all duration-300">
+<i class="ri-facebook-line"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#F9F0F7] text-primary hover:bg-primary hover:text-white transition-all duration-300">
+<i class="ri-pinterest-line"></i>
+</a>
+<a href="#" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary">
+<i class="ri-tiktok-line"></i>
+</a>
+</div>
+</div>
+<div>
+<h3 class="text-[#7D5E7A] font-medium mb-4">Shop</h3>
+<ul class="space-y-2 text-[#6BBBFF]">
+<li><a href="#" class="hover:text-primary">Phone Cases</a></li>
+<li><a href="#" class="hover:text-primary">Mouse Pads</a></li>
+<li><a href="#" class="hover:text-primary">Mirrors</a></li>
+<li><a href="#" class="hover:text-primary">Glass Tumblers</a></li>
+<li><a href="#" class="hover:text-primary">Candles</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-[#7D5E7A] font-medium mb-4">Help</h3>
+<ul class="space-y-2 text-[#6BBBFF]">
+<li><a href="#" class="hover:text-primary">FAQs</a></li>
+<li><a href="#" class="hover:text-primary">Shipping</a></li>
+<li><a href="#" class="hover:text-primary">Returns</a></li>
+<li><a href="#" class="hover:text-primary">Track Order</a></li>
+<li><a href="#" class="hover:text-primary">Contact Us</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-[#7D5E7A] font-medium mb-4">About</h3>
+<ul class="space-y-2 text-[#6BBBFF]">
+<li><a href="#" class="hover:text-primary">Our Story</a></li>
+<li><a href="#" class="hover:text-primary">Blog</a></li>
+<li><a href="#" class="hover:text-primary">Sustainability</a></li>
+<li><a href="#" class="hover:text-primary">Wholesale</a></li>
+<li><a href="#" class="hover:text-primary">Careers</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-[#F9F0F7] mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+<p class="text-[#9A7B97] text-sm">© 2025 Lush Lilac. All rights reserved 🌸</p>
+<div class="flex items-center space-x-4 mt-4 md:mt-0">
+<div class="w-8 h-8 flex items-center justify-center text-[#9A7B97]">
+<i class="ri-visa-line ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center text-[#9A7B97]">
+<i class="ri-mastercard-line ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center text-[#9A7B97]">
+<i class="ri-paypal-line ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center text-[#9A7B97]">
+<i class="ri-apple-fill ri-lg"></i>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wishlist functionality
+      const wishlistButtons = document.querySelectorAll('.ri-flower-line');
+      wishlistButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          if (this.classList.contains('ri-flower-line')) {
+            this.classList.remove('ri-flower-line');
+            this.classList.add('ri-flower-fill');
+            this.style.color = '#E8D5E4';
+          } else {
+            this.classList.remove('ri-flower-fill');
+            this.classList.add('ri-flower-line');
+            this.style.color = '';
+          }
+        });
+      });
+    
+      // Create floating flowers animation
+      function createFlower() {
+        const colors = ['#FFE4E1', '#FFF4D2', '#D4F1F4', '#E8D5E4'];
+        const flower = document.createElement('div');
+        flower.classList.add('floating-flowers');
+        flower.style.left = Math.random() * 100 + '%';
+        flower.style.animationDelay = Math.random() * 10 + 's';
+        flower.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        flower.style.borderRadius = '50%';
+        document.querySelector('.hero-bg').appendChild(flower);
+        setTimeout(() => {
+          flower.remove();
+        }, 15000);
+      }
+    
+      setInterval(createFlower, 2000);
+      for (let i = 0; i < 10; i++) {
+        createFlower();
+      }
+    });
+    </script>
+</body>
+</html>

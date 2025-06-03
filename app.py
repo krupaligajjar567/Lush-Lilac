@@ -760,8 +760,38 @@ def category_products(category_name):
 
 @app.route('/product/<product_id>')
 def product_detail(product_id):
+    # Fetch product details based on product_id
     product = Product.query.get_or_404(product_id)
     return render_template('product_detail.html', product=product)
+
+@app.route('/products')
+def products_list():
+    """Route to display a list of products based on provided IDs."""
+    product_ids_str = request.args.get('ids')
+    products = []
+    if product_ids_str:
+        try:
+            # Split the comma-separated string of IDs and convert to integers
+            product_ids = [int(id) for id in product_ids_str.split(',')]
+            # Fetch products from the database using the list of IDs
+            products = Product.query.filter(Product.id.in_(product_ids)).all()
+        except ValueError:
+            # Handle cases where IDs are not valid integers
+            flash('Invalid product IDs provided.', 'error')
+            return redirect(url_for('index')) # Redirect to index or an error page
+
+    # Render the products_list.html template, passing the fetched products
+    return render_template('products_list.html', products=products)
+
+@app.route('/new-arrivals')
+def new_arrivals_page():
+    """Route to display the 20 most recently added products."""
+    # Fetch the latest 20 products ordered by ID (assuming higher ID is more recent)
+    latest_products = Product.query.order_by(Product.id.desc()).limit(20).all()
+    
+    # Render the products_list.html template, passing the fetched products
+    # We can reuse products_list.html as it's designed to display a list of products
+    return render_template('products_list.html', products=latest_products)
 
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
 @login_required

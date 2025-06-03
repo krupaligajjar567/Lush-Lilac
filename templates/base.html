@@ -34,7 +34,7 @@
                     <div class="ml-10 flex items-center space-x-8">
                         <a href="/" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Home</a>
                         <a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Shop</a>
-                        <a href="#" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">New Arrivals</a>
+                        <a href="{{ url_for('new_arrivals_page') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">New Arrivals</a>
                         <a href="{{ url_for('about') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">About</a>
                         <a href="{{ url_for('contact') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Contact</a>
                         {% if current_user.is_authenticated %}
@@ -175,7 +175,6 @@
                         <li><a href="/category/Mirrors" class="text-[#9A7B97] hover:text-primary">Mirrors</a></li>
                         <li><a href="/category/Jewelry%20Boxes" class="text-[#9A7B97] hover:text-primary">Jewelry Boxes</a></li>
                         <li><a href="/category/Home%20Decor" class="text-[#9A7B97] hover:text-primary">Home Decor</a></li>
-                        <li><a href="/category/Gift%20Sets" class="text-[#9A7B97] hover:text-primary">Gift Sets</a></li>
                     </ul>
                 </div>
                 <div>
@@ -192,11 +191,7 @@
                 <div>
                     <h3 class="text-[#7D5E7A] font-semibold mb-4">Contact</h3>
                     <div class="space-y-2 text-[#9A7B97]">
-                        <p><i class="ri-map-pin-line mr-2"></i>1234 Lilac Lane, Beverly Hills, CA 90210</p>
-                        <p><i class="ri-phone-line mr-2"></i>+1 (800) 123-4567</p>
-                        <p><i class="ri-mail-line mr-2"></i>hello@bowsomeboutique.com</p>
-                        <p><i class="ri-time-line mr-2"></i>Mon-Fri: 9am-6pm</p>
-                        <p class="ml-6">Sat-Sun: 10am-4pm</p>
+                        <p><i class="ri-mail-line mr-2"></i>lushlilac30@gmail.com</p>
                     </div>
                 </div>
             </div>

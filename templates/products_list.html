@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Selected Products - Lush Lilac{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-br from-[#F9F0F7] via-[#FFF4D2] to-[#E8D5E4] min-h-screen py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Selected Products <span class="ml-2 text-[#FFB5D8]">🌸</span></h2>
+        <p class="text-[#9A7B97] max-w-2xl mx-auto">Browse the products you selected!</p>
+    </div>
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for product in products %}
+        <div class="category-card bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                <div class="h-64 bg-[#F9F0F7] flex items-center justify-center">
+                    {% if product.image %}
+                    <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" style="max-height:15rem; max-width:100%; object-fit:contain;">
+                    {% endif %}
+                </div>
+            </a>
+            <div class="p-4">
+                <h3 class="text-[#7D5E7A] font-medium">{{ product.name }}</h3>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                    <div class="flex space-x-2">
+                         {% if current_user.is_authenticated %}
+                         <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}" title="{% if product in current_user.wishlists|map(attribute='product')|list %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+                             <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                         </button>
+                         {% endif %}
+                         <a href="{{ url_for('product_detail', product_id=product.id) }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="View Details">
+                             <i class="ri-eye-line"></i>
+                         </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-[#F9F0F7] rounded-lg p-6 text-center">
+        <p class="text-[#7D5E7A]">No products found with the provided IDs.</p>
+    </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %} 
