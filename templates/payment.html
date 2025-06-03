@@ -37,11 +37,37 @@
             <p class="text-gray-700"><strong>Email:</strong> {{ checkout_details.email }}</p>
         </div>
 
-        <!-- Payment Button -->
-        <div class="text-center">
-            <button id="rzp-button" class="bg-primary hover:bg-[#D4B6D0] text-white px-8 py-3 rounded-button font-medium transition-all duration-300 shadow-md">Pay with Razorpay</button>
-        </div>
+        <!-- Payment Options -->
+        <div class="space-y-6">
+            <h2 class="text-xl font-semibold text-[#7D5E7A] mb-4">Choose Payment Method</h2>
+            
+            <!-- COD Option -->
+            <form method="POST" class="bg-[#F9F0F7] rounded-lg p-6 shadow-sm">
+                <input type="hidden" name="payment_method" value="COD">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium text-[#7D5E7A]">Cash on Delivery</h3>
+                        <p class="text-gray-600">Pay when you receive your order</p>
+                    </div>
+                    <button type="submit" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 shadow-md">
+                        Place Order
+                    </button>
+                </div>
+            </form>
 
+            <!-- Razorpay Option -->
+            <div class="bg-[#F9F0F7] rounded-lg p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-medium text-[#7D5E7A]">Pay Online</h3>
+                        <p class="text-gray-600">Secure payment with Razorpay</p>
+                    </div>
+                    <button id="rzp-button" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 shadow-md">
+                        Pay Now
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -49,15 +75,13 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     var options = {
-        "key": "{{ razorpay_key_id }}", // Enter the Key ID generated from the Dashboard
-        "amount": "{{ amount }}", // Amount in paise
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ amount }}",
         "currency": "INR",
         "name": "Lush Lilac",
         "description": "Order Payment",
-        "order_id": "{{ razorpay_order_id }}", // This is the ID obtained from the Razorpay order created on the server side
+        "order_id": "{{ razorpay_order_id }}",
         "handler": function (response){
-            // This function is called after successful payment
-            // You should send the response to your Flask backend for verification
             window.location.href = "{{ url_for('razorpay_callback') }}?order_id=" + response.razorpay_order_id + "&payment_id=" + response.razorpay_payment_id + "&signature=" + response.razorpay_signature;
         },
         "prefill": {
