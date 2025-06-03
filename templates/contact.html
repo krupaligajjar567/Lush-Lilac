@@ -20,12 +20,12 @@
             <form action="/send_message" method="POST" class="space-y-6">
                 <div class="space-y-2">
                     <label for="name" class="block text-[#7D5E7A] text-sm font-medium">Your Name *</label>
-                    <input type="text" id="name" name="name" required class="w-full px-4 py-2 rounded-button border-2 border-[#FFE4E1] focus:border-primary focus:outline-none text-[#7D5E7A]">
+                    <input type="text" id="name" name="name" required class="w-full px-4 py-2 rounded-button border-2 border-[#FFE4E1] focus:border-primary focus:outline-none text-[#7D5E7A]" value="{{ current_user.username if current_user.is_authenticated else '' }}">
                 </div>
                 
                 <div class="space-y-2">
                     <label for="email" class="block text-[#7D5E7A] text-sm font-medium">Your Email *</label>
-                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 rounded-button border-2 border-[#FFE4E1] focus:border-primary focus:outline-none text-[#7D5E7A]">
+                    <input type="email" id="email" name="email" required class="w-full px-4 py-2 rounded-button border-2 border-[#FFE4E1] focus:border-primary focus:outline-none text-[#7D5E7A]" value="{{ current_user.email if current_user.is_authenticated else '' }}">
                 </div>
                 
                 <div class="space-y-2">
