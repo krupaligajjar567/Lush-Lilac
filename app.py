@@ -985,20 +985,20 @@ def payment():
     if request.method == 'POST':
         payment_method = request.form.get('payment_method')
         
-        # Create a new Order in your database
-        new_order = Order(
-            user_id=current_user.id,
-            order_date=datetime.utcnow(),
-            status='pending',
-            total_amount=total,
-            customer_name=checkout_details.get('name'),
-            email=checkout_details.get('email'),
-            phone=checkout_details.get('phone'),
-            address=checkout_details.get('address'),
-            payment_method=payment_method
-        )
-        
         if payment_method == 'COD':
+            # Create a new Order in your database
+            new_order = Order(
+                user_id=current_user.id,
+                order_date=datetime.utcnow(),
+                status='pending',
+                total_amount=total,
+                customer_name=checkout_details.get('name'),
+                email=checkout_details.get('email'),
+                phone=checkout_details.get('phone'),
+                address=checkout_details.get('address'),
+                payment_method=payment_method
+            )
+            
             # For COD, create order items immediately
             for cart_item in cart_items:
                 order_item = OrderItem(
@@ -1016,6 +1016,7 @@ def payment():
             session.pop('checkout_details', None)
             
             try:
+                db.session.add(new_order)
                 db.session.commit()
                 
                 # Send confirmation email for COD order
@@ -1058,51 +1059,62 @@ def payment():
                 flash(f'Error processing order: {str(e)}', 'error')
                 return redirect(url_for('checkout'))
         
-        # For Razorpay payment
-        try:
-            import razorpay
-            client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
-            
-            # Create a Razorpay Order
-            razorpay_order = client.order.create({
-                'amount': amount_paise,
-                'currency': 'INR',
-                'receipt': f'order_rcpt_{datetime.utcnow().timestamp()}',
-                'notes': {
-                    'user_id': current_user.id,
-                    'email': checkout_details.get('email'),
-                    'phone': checkout_details.get('phone')
-                }
-            })
-            razorpay_order_id = razorpay_order['id']
-            print(f"Razorpay Order Created: {razorpay_order_id}")
-
-            # Store the Razorpay order ID
-            new_order.razorpay_order_id = razorpay_order_id
-            db.session.add(new_order)
-            db.session.commit()
-            print(f"Local Order Created with ID: {new_order.id} and Razorpay ID: {new_order.razorpay_order_id}")
-
-        except Exception as e:
-            print(f"Error creating Razorpay Order or saving local order: {str(e)}")
-            flash(f'Error processing payment: {str(e)}', 'error')
-            return redirect(url_for('checkout'))
-            
-        # Pass necessary data to the payment template
-        return render_template('payment.html', 
-                               checkout_details=checkout_details, 
-                               cart_items=cart_items, 
-                               total=total,
-                               razorpay_key_id=app.config['RAZORPAY_KEY_ID'],
-                               razorpay_order_id=razorpay_order_id,
-                               amount=amount_paise
-                              )
+        # For Razorpay payment (This part might not be strictly needed anymore as order is created on GET, but keeping for potential future use)
+        # If you have other online payment methods, this is where you'd handle them.
+        # The Razorpay initiation is now handled on the GET request.
+        pass # The actual Razorpay payment happens client-side after GET render
     
-    # GET request - Show payment options
+    # GET request - Show payment options and prepare for Razorpay
+    try:
+        import razorpay
+        client = razorpay.Client(auth=(app.config['RAZORPAY_KEY_ID'], app.config['RAZORPAY_KEY_SECRET']))
+        
+        # Create a Razorpay Order on GET request
+        razorpay_order = client.order.create({
+            'amount': amount_paise,
+            'currency': 'INR',
+            'receipt': f'order_rcpt_{datetime.utcnow().timestamp()}',
+            'notes': {
+                'user_id': current_user.id,
+                'email': checkout_details.get('email'),
+                'phone': checkout_details.get('phone')
+            }
+        })
+        razorpay_order_id = razorpay_order['id']
+        print(f"Razorpay Order Created on GET: {razorpay_order_id}") # Debug print
+
+        # Create a new Order in your database and link it to the Razorpay order ID
+        # Set status to 'pending' or 'initiated'
+        new_order = Order(
+            user_id=current_user.id,
+            order_date=datetime.utcnow(),
+            status='initiated', # Set status to initiated for online payments
+            total_amount=total,
+            customer_name=checkout_details.get('name'),
+            email=checkout_details.get('email'),
+            phone=checkout_details.get('phone'),
+            address=checkout_details.get('address'),
+            payment_method='Razorpay',
+            razorpay_order_id=razorpay_order_id # Store the Razorpay order ID
+        )
+        db.session.add(new_order)
+        db.session.commit()
+        print(f"Local Order Initiated on GET with ID: {new_order.id} and Razorpay ID: {new_order.razorpay_order_id}") # Debug print
+
+    except Exception as e:
+        print(f"Error creating Razorpay Order or initiating local order on GET: {str(e)}") # Updated error message
+        flash(f'Error preparing for payment: {str(e)}', 'error')
+        return redirect(url_for('checkout'))
+        
+    # Pass necessary data to the payment template
     return render_template('payment.html', 
                            checkout_details=checkout_details, 
                            cart_items=cart_items, 
-                           total=total)
+                           total=total,
+                           razorpay_key_id=app.config['RAZORPAY_KEY_ID'],
+                           razorpay_order_id=razorpay_order_id,
+                           amount=amount_paise
+                          )
 
 @app.route('/admin/product/<int:product_id>')
 @login_required
