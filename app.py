@@ -181,9 +181,9 @@ def send_message():
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
+        username = request.form.get('username').strip()
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
 
         print(f"Registration attempt - Username: {username}, Email: {email}")
 
@@ -226,8 +226,8 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    username = request.form.get('username').strip()
+    password = request.form.get('password').strip()
     
     print(f"Login attempt for username: {username}")  # Debug print
     
