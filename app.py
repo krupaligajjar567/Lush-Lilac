@@ -71,6 +71,7 @@ class Order(db.Model):
     payment_method = db.Column(db.String(50), default='Credit Card')
     payment_status = db.Column(db.String(20), default='Paid')
     tracking_number = db.Column(db.String(50))
+    razorpay_order_id = db.Column(db.String(100), unique=True, nullable=True) # Add field to store Razorpay order ID
 
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -1003,9 +1004,25 @@ def payment():
         })
         razorpay_order_id = razorpay_order['id']
         print(f"Razorpay Order Created: {razorpay_order_id}") # Debug print
-        
+
+        # Create a new Order in your database and link it to the Razorpay order ID
+        new_order = Order(
+            user_id=current_user.id,
+            order_date=datetime.utcnow(),
+            status='pending', # Set status to pending initially
+            total_amount=total, # Use the calculated total
+            customer_name=checkout_details.get('name'),
+            email=checkout_details.get('email'),
+            phone=checkout_details.get('phone'),
+            address=checkout_details.get('address'),
+            razorpay_order_id=razorpay_order_id # Store the Razorpay order ID
+        )
+        db.session.add(new_order)
+        db.session.commit() # Commit the new order to get an ID
+        print(f"Local Order Created with ID: {new_order.id} and Razorpay ID: {new_order.razorpay_order_id}") # Debug print
+
     except Exception as e:
-        print(f"Error creating Razorpay Order: {str(e)}")
+        print(f"Error creating Razorpay Order or saving local order: {str(e)}") # Updated error message
         flash(f'Error processing payment: {str(e)}', 'error')
         return redirect(url_for('checkout'))
         
@@ -1200,7 +1217,6 @@ def razorpay_callback():
 
         # If verification succeeds, find the order and update its status
         # We need to find the order based on the Razorpay order ID.
-        # This requires storing the Razorpay order ID in our database.
         # For now, let's assume we can find the corresponding Order based on something else, e.g., user and latest pending order.
         # A better approach would be to store razorpay_order_id in the Order model.
         # Let's quickly add razorpay_order_id to the Order model and update the checkout process.
@@ -1208,9 +1224,8 @@ def razorpay_callback():
         # **IMPORTANT:** The following lines to find and update the order are temporary.
         # We will refine this by adding razorpay_order_id to the Order model next.
         
-        # Find the latest pending order for the current user
-        order = Order.query.filter_by(user_id=current_user.id, status='pending')\
-                           .order_by(Order.order_date.desc()).first()
+        # Find the order using the razorpay_order_id received in the callback
+        order = Order.query.filter_by(razorpay_order_id=razorpay_order_id).first()
 
         if order:
             # Update the order status to 'completed' or 'processing'
@@ -1291,6 +1306,7 @@ def razorpay_callback():
 
         else:
             # Handle case where order is not found (shouldn't happen if flow is correct)
+            print(f"Error: Order with Razorpay ID {razorpay_order_id} not found.") # Added debug print
             flash('Error: Corresponding order not found.', 'error')
             return redirect(url_for('view_cart'))
 

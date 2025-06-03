@@ -46,7 +46,7 @@
 
 .category-image-wrapper {
     position: absolute;
-    top: 0;
+    top: 0; 
     left: 0;
     right: 0;
     bottom: 0;
@@ -224,54 +224,54 @@
 </style>
 <!-- Hero Section -->
 <div class="hero-bg w-full relative min-h-[500px]" style="background-image: url('{{ url_for('static', filename='images/hero1.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-        <div class="w-full md:w-1/2">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+<div class="w-full md:w-1/2">
             {# Hero content goes here if needed #}
-        </div>
-    </div>
-    <!-- Decorative Flowers -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-        <div class="floating-flowers" style="left: 10%; animation-delay: 0s; background-color: #FFE4E1; border-radius: 50%"></div>
-        <div class="floating-flowers" style="left: 25%; animation-delay: 2s; background-color: #FFF4D2; border-radius: 50%"></div>
-        <div class="floating-flowers" style="left: 40%; animation-delay: 5s; background-color: #D4F1F4; border-radius: 50%"></div>
-        <div class="floating-flowers" style="left: 65%; animation-delay: 3s; background-color: #E8D5E4; border-radius: 50%"></div>
-        <div class="floating-flowers" style="left: 80%; animation-delay: 7s; background-color: #FFE4E1; border-radius: 50%"></div>
-        <div class="floating-flowers" style="left: 95%; animation-delay: 1s; background-color: #FFF4D2; border-radius: 50%"></div>
-    </div>
+</div>
+</div>
+<!-- Decorative Flowers -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden">
+<div class="floating-flowers" style="left: 10%; animation-delay: 0s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 25%; animation-delay: 2s; background-color: #FFF4D2; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 40%; animation-delay: 5s; background-color: #D4F1F4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 65%; animation-delay: 3s; background-color: #E8D5E4; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 80%; animation-delay: 7s; background-color: #FFE4E1; border-radius: 50%"></div>
+<div class="floating-flowers" style="left: 95%; animation-delay: 1s; background-color: #FFF4D2; border-radius: 50%"></div>
+</div>
 </div>
 
 {# Bestsellers Section #}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" style="background-image: url('https://readdy.ai/api/search-image?query=extremely%2520soft%2520and%2520blurry%2520miniature%2520flowers%2520scattered%2520across%2520a%2520pure%2520white%2520background%252C%2520creating%2520a%2520very%2520subtle%2520and%2520delicate%2520pattern.%2520The%2520flowers%2520are%2520in%2520pastel%2520lilac%252C%2520pink%252C%2520and%2520blue%2520tones%252C%2520barely%2520visible%2520and%2520creating%2520an%2520ethereal%252C%2520dreamy%2520effect.%2520The%2520overall%2520look%2520is%2520very%2520light%2520and%2520airy%2520with%2520minimal%2520contrast&width=1200&height=600&seq=3&orientation=landscape'); background-size: cover; background-position: center; background-repeat: no-repeat;">
-    <div class="text-center mb-12">
+<div class="text-center mb-12">
         <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Our Bestsellers 🌟</h2>
         <p class="text-[#9A7B97] max-w-2xl mx-auto">Discover our most loved items that are making everyone's day a little brighter and fairer!</p>
-    </div>
+</div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Bestseller 1 -->
         <div class="relative overflow-hidden rounded-lg shadow-lg group">
             <img src="{{ url_for('static', filename='images/Untitled design (35).png') }}" alt="Bestseller 1" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div class="flex flex-col items-start">
+    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div class="flex flex-col items-start">
                     <p class="text-white text-base font-semibold mb-2">Discover these cute items</p>
                     <a href="/products?ids=228,112" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
-                </div>
-            </div>
-        </div>
+      </div>
+    </div>
+  </div>
         <!-- Bestseller 2 -->
-        <div class="relative overflow-hidden rounded-lg shadow-lg group">
+    <div class="relative overflow-hidden rounded-lg shadow-lg group">
             <img src="{{ url_for('static', filename='images/Papeterie de mariage.jpeg') }}" alt="Bestseller 2" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div class="flex flex-col items-start">
+      <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div class="flex flex-col items-start">
                     <p class="text-white text-base font-semibold mb-2">Discover these cute items</p>
                     <a href="/products?ids=204,207,227,226" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
-                </div>
-            </div>
         </div>
+      </div>
+    </div>
         <!-- Bestseller 3 -->
-        <div class="relative overflow-hidden rounded-lg shadow-lg group">
+    <div class="relative overflow-hidden rounded-lg shadow-lg group">
             <img src="{{ url_for('static', filename='images/download (89).jpeg') }}" alt="Bestseller 3" class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div class="flex flex-col items-start">
+      <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div class="flex flex-col items-start">
                     <p class="text-white text-base font-semibold mb-2">Discover these cute items</p>
                     <a href="/products?ids=224,225,39" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
                 </div>
@@ -284,10 +284,10 @@
                 <div class="flex flex-col items-start">
                     <p class="text-white text-base font-semibold mb-2">Discover these cute items</p>
                     <a href="/products?ids=229,230,231,232" class="bg-white text-[#7D5E7A] px-6 py-3 rounded-full font-semibold hover:bg-[#E8D5E4] transition-colors duration-300">Shop Now</a>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
+</div>
 </div>
 {# End Bestsellers Section #}
 
@@ -296,8 +296,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Shop by Category 🌷</h2>
-            <p class="text-[#9A7B97] max-w-2xl mx-auto">Find your perfect cute accessory by browsing our adorable categories!</p>
-        </div>
+                <p class="text-[#9A7B97] max-w-2xl mx-auto">Find your perfect cute accessory by browsing our adorable categories!</p>
+            </div>
 
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {# Define categories with images for the grid using your categories #}
@@ -319,7 +319,7 @@
                     <div class="category-grid-overlay">
                         <h3>{{ category.name }}</h3>
                         {# Optional: Add a short description here if you have one for categories #}
-                    </div>
+                        </div>
                 </a>
             {% endfor %}
         </div>
@@ -330,66 +330,66 @@
 <!-- New Arrivals -->
 {% if new_arrivals %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 floating-flower-bg">
-    <div class="text-center mb-12">
+<div class="text-center mb-12">
         <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">New Arrivals 🌺</h2>
         <p class="text-[#9A7B97] max-w-2xl mx-auto">Check out our latest 20 cute additions to the Lush Lilac family!</p>
-    </div>
+</div>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {% for product in new_arrivals[:20] %}
-        <div class="category-card flex flex-col items-center">
+    <div class="category-card flex flex-col items-center">
              <a href="/product/{{ product.id }}" class="w-full">
                 <div class="product-oval-container w-full aspect-square bg-[#F9F0F7] rounded-lg flex items-center justify-center overflow-hidden mb-4">
-                    {% if product.image %}
-                    <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" class="h-full w-full object-cover">
-                    {% else %}
-                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" class="h-full w-full object-cover">
-                    {% endif %}
-                </div>
-            </a>
-            <div class="text-center w-full">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }}" class="h-full w-full object-cover">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image" class="h-full w-full object-cover">
+                {% endif %}
+            </div>
+        </a>
+        <div class="text-center w-full">
                 <h3 class="text-[#7D5E7A] font-medium text-sm line-clamp-2">{{ product.name }}</h3>
-                <div class="flex justify-center items-center mt-2 space-x-2">
-                    <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
-                     {% if current_user.is_authenticated %}
-                    <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
-                        <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+            <div class="flex justify-center items-center mt-2 space-x-2">
+                <span class="text-[#9A7B97] font-medium">₹{{ '%.2f'|format(product.price) }}</span>
+                 {% if current_user.is_authenticated %}
+                <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary wishlist-btn" data-product-id="{{ product.id }}">
+                    <i class="{% if product in current_user.wishlists|map(attribute='product')|list %}ri-flower-fill{% else %}ri-flower-line{% endif %}"></i>
+                </button>
+                {% endif %}
+                {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
+                    <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
+                        <i class="ri-shopping-bag-line"></i>
+                    </a>
+                {% else %}
+                    <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
+                        <i class="ri-shopping-bag-line"></i>
                     </button>
-                    {% endif %}
-                    {% if 'Phone Case' in product.name or (product.category and 'Phone Case' in product.category) or (product.category and 'Mouse Pads' in product.category) %}
-                        <a href="/product/{{ product.id }}" class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary" title="Select Options & Add to Cart">
-                            <i class="ri-shopping-bag-line"></i>
-                        </a>
-                    {% else %}
-                        <button class="w-8 h-8 flex items-center justify-center text-[#9A7B97] hover:text-primary add-to-cart-btn" data-product-id="{{ product.id }}" title="Add to Cart">
-                            <i class="ri-shopping-bag-line"></i>
-                        </button>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
 </div>
 {% endif %}
 <!-- Newsletter -->
 <div class="bg-[#F9F0F7] py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-lg p-8 md:p-12 shadow-sm">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Join Our Cute Community 🌸</h2>
-                <p class="text-[#9A7B97] max-w-2xl mx-auto">Subscribe to our newsletter for exclusive offers, cute updates, and first access to new releases!</p>
-            </div>
-            <div class="max-w-md mx-auto relative">
-                <div class="flex">
-                    <input type="email" placeholder="Your email address" class="cute-input flex-1 py-3 px-4 rounded-l-button text-[#7D5E7A]">
-                    <button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-3 rounded-r-button font-medium transition-all duration-300 btn-hover whitespace-nowrap">
-                        Subscribe
-                    </button>
-                </div>
-                <div class="absolute -right-28 top-1/2 transform -translate-y-1/2 w-20 h-20" style="background-image: url('https://readdy.ai/api/search-image?query=cute%20purple%20gift%20box%20with%20pastel%20pink%20ribbon%20bow%20on%20top%2C%20soft%20lighting%2C%20delicate%20details%2C%203D%20rendered%2C%20centered%20composition%20on%20pure%20white%20background&width=200&height=200&seq=5&orientation=squarish'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
-            </div>
-        </div>
-    </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-white rounded-lg p-8 md:p-12 shadow-sm">
+<div class="text-center mb-8">
+<h2 class="text-3xl font-semibold text-[#7D5E7A] mb-4">Join Our Cute Community 🌸</h2>
+<p class="text-[#9A7B97] max-w-2xl mx-auto">Subscribe to our newsletter for exclusive offers, cute updates, and first access to new releases!</p>
+</div>
+<div class="max-w-md mx-auto relative">
+<div class="flex">
+<input type="email" placeholder="Your email address" class="cute-input flex-1 py-3 px-4 rounded-l-button text-[#7D5E7A]">
+<button class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-3 rounded-r-button font-medium transition-all duration-300 btn-hover whitespace-nowrap">
+Subscribe
+</button>
+</div>
+<div class="absolute -right-28 top-1/2 transform -translate-y-1/2 w-20 h-20" style="background-image: url('https://readdy.ai/api/search-image?query=cute%20purple%20gift%20box%20with%20pastel%20pink%20ribbon%20bow%20on%20top%2C%20soft%20lighting%2C%20delicate%20details%2C%203D%20rendered%2C%20centered%20composition%20on%20pure%20white%20background&width=200&height=200&seq=5&orientation=squarish'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+</div>
+</div>
+</div>
 </div>
 
 {% endblock %}
@@ -410,9 +410,9 @@
                     icon.classList.remove('ri-flower-fill');
                     icon.classList.add('ri-flower-line');
                     icon.style.color = '';
-                }
+            }
             });
-        });
+    });
 
         // Create floating flowers animation (Keep this if you want the animation)
         function createFlower() {
