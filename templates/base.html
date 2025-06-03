@@ -30,6 +30,15 @@
                 <div class="flex-shrink-0 flex items-center">
                     <a href="/" class="font-['Pacifico'] text-3xl text-primary">Lush Lilac</a>
                 </div>
+
+                <!-- Hamburger Menu Button (Mobile) -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-primary hover:text-[#D4B6D0] focus:outline-none">
+                        <i class="ri-menu-line ri-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Main Navigation (Desktop) -->
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-center space-x-8">
                         <a href="/" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Home</a>
@@ -44,6 +53,8 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <!-- Icons (Search, Wishlist, Cart, User) -->
                 <div class="flex items-center space-x-6">
                     <div class="relative">
                         <input type="text" placeholder="Search..." class="bg-white/80 border-2 border-[#FFE4E1] py-2 pl-10 pr-4 rounded-full text-sm w-40 md:w-64 focus:border-[#E8D5E4] focus:outline-none focus:ring-2 focus:ring-[#E8D5E4]/50">
@@ -131,6 +142,25 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu (appears on md:hidden) -->
+    <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-white/90 backdrop-blur-sm z-40 p-6 pt-20">
+        <div class="flex flex-col space-y-4">
+            <a href="/" class="text-primary hover:text-[#D4B6D0] text-lg font-medium">Home</a>
+            <a href="#" class="text-primary hover:text-[#D4B6D0] text-lg font-medium">Shop</a>
+            <a href="{{ url_for('new_arrivals_page') }}" class="text-primary hover:text-[#D4B6D0] text-lg font-medium">New Arrivals</a>
+            <a href="{{ url_for('about') }}" class="text-primary hover:text-[#D4B6D0] text-lg font-medium">About</a>
+            <a href="{{ url_for('contact') }}" class="text-primary hover:text-[#D4B6D0] text-lg font-medium">Contact</a>
+            {# Login/Register or Welcome message in Mobile Menu #}
+            {% if current_user.is_authenticated %}
+            <span class="text-primary text-lg font-medium pt-4 border-t border-[#F9F0F7]">Welcome, {{ current_user.username }}! 🌸</span>
+            <a href="/my_orders" class="text-[#7D5E7A] hover:text-primary text-base font-medium ml-4 mt-2">My Orders</a>
+            <a href="/logout" class="text-[#7D5E7A] hover:text-primary text-base font-medium ml-4">Logout</a>
+            {% else %}
+            <button onclick="showLoginForm(); closeMobileMenu()" class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-lg font-medium transition-all duration-300 btn-hover mt-4">Login/Register</button>
+            {% endif %}
+        </div>
+    </div>
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -494,6 +524,28 @@
                     showRegisterForm();
                 });
             }
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+
+            // Close mobile menu function (can be called from links)
+            function closeMobileMenu() {
+                mobileMenu.classList.add('hidden');
+            }
+
+            // Add event listeners to close mobile menu when a link is clicked
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', function() {
+                    closeMobileMenu();
+                });
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
