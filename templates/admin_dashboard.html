@@ -80,7 +80,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="/admin/dashboard" class="font-semibold text-xl text-primary">Admin Dashboard</a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="font-semibold text-xl text-primary">Admin Dashboard</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="relative">
@@ -90,10 +90,13 @@
                         </button>
                     </div>
                     <span class="text-primary">Welcome, {{ current_user.username }}</span>
-                    <a href="/admin/orders" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                    <a href="{{ url_for('admin_orders') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
                         <i class="ri-shopping-bag-line mr-2"></i>All Orders
                     </a>
-                    <a href="/logout" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                    <a href="{{ url_for('admin_users') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
+                        <i class="ri-user-line mr-2"></i>Manage Users
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">
                         <i class="ri-logout-box-line mr-2"></i>Logout
                     </a>
                 </div>
@@ -122,7 +125,7 @@
                 <p class="text-gray-500">Welcome back! Here's what's happening with your store today.</p>
             </div>
             <div class="flex space-x-3">
-                <a href="/admin/add_product" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover flex items-center">
+                <a href="{{ url_for('admin_add_product') }}" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300 btn-hover flex items-center">
                     <i class="ri-add-line mr-2"></i> Add Product
                 </a>
                 <button onclick="refreshDashboard()" class="bg-[#F9F0F7] hover:bg-[#E8D5E4] text-primary px-4 py-2 rounded-button font-medium transition-all duration-300">

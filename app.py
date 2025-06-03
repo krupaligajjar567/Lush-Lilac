@@ -548,6 +548,46 @@ def update_admin_password():
     
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    if current_user.user_type != 'admin':
+        flash('Access denied')
+        return redirect(url_for('index'))
+
+    users = User.query.all()
+    return render_template('admin_users.html', users=users)
+
+@app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
+@login_required
+def admin_delete_user(user_id):
+    if current_user.user_type != 'admin':
+        flash('Access denied')
+        return redirect(url_for('index'))
+
+    user = User.query.get_or_404(user_id)
+
+    # Prevent deleting the current admin user
+    if user.id == current_user.id:
+        flash('Cannot delete the currently logged in admin user.', 'error')
+        return redirect(url_for('admin_users'))
+        
+    try:
+        # Delete related data first to avoid foreign key constraints
+        CartItem.query.filter_by(user_id=user.id).delete()
+        Wishlist.query.filter_by(user_id=user.id).delete()
+        Order.query.filter_by(user_id=user.id).delete() # Assuming orders are linked to users
+
+        # Delete the user
+        db.session.delete(user)
+        db.session.commit()
+        flash(f'User {user.username} deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting user {user.username}: {str(e)}', 'error')
+
+    return redirect(url_for('admin_users'))
+
 # Create admin user if not exists
 def create_admin():
     admin = User.query.filter_by(username='admin').first()
