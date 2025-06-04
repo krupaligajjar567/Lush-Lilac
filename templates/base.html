@@ -48,6 +48,10 @@
                         <a href="{{ url_for('contact') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Contact</a>
                         {% if current_user.is_authenticated %}
                         <span class="text-primary px-3 py-2 text-sm font-medium">Welcome, {{ current_user.username }}! 🌸</span>
+                        {# Add conditional Admin link for the special user #}
+                        {% if session.get('is_special_admin') %}
+                        <a href="{{ url_for('admin_login') }}" class="text-primary hover:text-[#D4B6D0] px-3 py-2 text-sm font-medium">Admin</a>
+                        {% endif %}
                         {% else %}
                         <button id="loginButton" class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-sm font-medium transition-all duration-300 btn-hover">Login/Register</button>
                         {% endif %}
@@ -155,6 +159,10 @@
             {% if current_user.is_authenticated %}
             <span class="text-primary text-lg font-medium pt-4 border-t border-[#F9F0F7]">Welcome, {{ current_user.username }}! 🌸</span>
             <a href="/my_orders" class="text-[#7D5E7A] hover:text-primary text-base font-medium ml-4 mt-2">My Orders</a>
+            {# Add conditional Admin link for the special user in mobile menu #}
+            {% if session.get('is_special_admin') %}
+            <a href="{{ url_for('admin_login') }}" class="text-[#7D5E7A] hover:text-primary text-base font-medium ml-4">Admin Login</a>
+            {% endif %}
             <a href="/logout" class="text-[#7D5E7A] hover:text-primary text-base font-medium ml-4">Logout</a>
             {% else %}
             <button onclick="showLoginForm(); closeMobileMenu()" class="bg-primary hover:bg-[#D4B6D0] text-white px-4 py-2 rounded-button text-lg font-medium transition-all duration-300 btn-hover mt-4">Login/Register</button>

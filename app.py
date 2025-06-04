@@ -237,6 +237,14 @@ def login():
     if user and user.check_password(password):
         print("Password check passed")  # Debug print
         login_user(user)
+        
+        # Check if the logged-in user is the special admin user
+        if user.email == 'krupaligajjar8@gmail.com':
+            session['is_special_admin'] = True
+        else:
+            # Ensure the flag is not set for other users
+            session.pop('is_special_admin', None)
+
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({
                 'success': True,
@@ -277,8 +285,9 @@ def admin_login():
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
     
     # Get statistics
@@ -330,8 +339,9 @@ def admin_dashboard():
 @app.route('/admin/orders')
 @login_required
 def admin_orders():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
     
     # Get filter parameters
@@ -382,7 +392,8 @@ def admin_orders():
 @app.route('/admin/order/<int:order_id>/details')
 @login_required
 def admin_order_details_json(order_id):
-    if current_user.user_type != 'admin':
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
         return jsonify({'success': False, 'message': 'Access denied'}), 403
     
     order = Order.query.get_or_404(order_id)
@@ -421,8 +432,9 @@ def admin_order_details_json(order_id):
 @app.route('/admin/order/<int:order_id>/update', methods=['POST'])
 @login_required
 def admin_update_order_extended(order_id):
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
     
     order = Order.query.get_or_404(order_id)
@@ -476,11 +488,12 @@ def admin_update_order_extended(order_id):
 @app.route('/admin/customer/<int:customer_id>')
 @login_required
 def admin_customer_details(customer_id):
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
     
-    customer = User.query.get_or_404(customer_id)
+    customer = User.query.filter_by(id=customer_id, user_type='customer').first_or_404()
     orders = Order.query.filter_by(user_id=customer_id).order_by(Order.order_date.desc()).all()
     return render_template('admin_customer_details.html', customer=customer, orders=orders)
 
@@ -534,57 +547,61 @@ def logout():
 @app.route('/admin/update_password', methods=['POST'])
 @login_required
 def update_admin_password():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-    
-    new_password = request.form.get('new_password')
-    if new_password:
-        current_user.set_password(new_password)
-        db.session.commit()
-        flash('Admin password updated successfully')
-    else:
-        flash('Invalid password')
-    
-    return redirect(url_for('admin_dashboard'))
+
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        if new_password:
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Admin password updated successfully')
+        else:
+            flash('Invalid password')
+        
+        return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/users')
 @login_required
 def admin_users():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-
+    
     users = User.query.all()
     return render_template('admin_users.html', users=users)
 
 @app.route('/admin/user/<int:user_id>/delete', methods=['POST'])
 @login_required
 def admin_delete_user(user_id):
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-
-    user = User.query.get_or_404(user_id)
+    
+    user_to_delete = User.query.get_or_404(user_id)
 
     # Prevent deleting the current admin user
-    if user.id == current_user.id:
+    if user_to_delete.id == current_user.id:
         flash('Cannot delete the currently logged in admin user.', 'error')
         return redirect(url_for('admin_users'))
         
     try:
         # Delete related data first to avoid foreign key constraints
-        CartItem.query.filter_by(user_id=user.id).delete()
-        Wishlist.query.filter_by(user_id=user.id).delete()
-        Order.query.filter_by(user_id=user.id).delete() # Assuming orders are linked to users
+        CartItem.query.filter_by(user_id=user_to_delete.id).delete()
+        Wishlist.query.filter_by(user_id=user_to_delete.id).delete()
+        Order.query.filter_by(user_id=user_to_delete.id).delete() # Assuming orders are linked to users
 
         # Delete the user
-        db.session.delete(user)
+        db.session.delete(user_to_delete)
         db.session.commit()
-        flash(f'User {user.username} deleted successfully!', 'success')
+        flash(f'User {user_to_delete.username} deleted successfully!', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting user {user.username}: {str(e)}', 'error')
+        flash(f'Error deleting user {user_to_delete.username}: {str(e)}', 'error')
 
     return redirect(url_for('admin_users'))
 
@@ -680,12 +697,11 @@ def remove_from_wishlist(product_id):
 @app.route('/admin/add_product', methods=['GET', 'POST'])
 @login_required
 def admin_add_product():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-    categories = [
-        'Phone Cases', 'Mouse Pads', 'Candles', 'Bags', 'Glass Tumblers', 'Nails', 'Accessories', 'Decors', 'Stationary'
-    ]
+
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
@@ -715,7 +731,7 @@ def admin_add_product():
             db.session.add(product)
             db.session.commit()
             flash('Product added successfully!', 'success')
-            return redirect(url_for('admin_add_product'))
+            return redirect(url_for('admin_bestsellers'))
         except Exception as e:
             db.session.rollback()
             flash('Error adding product: ' + str(e), 'error')
@@ -727,10 +743,11 @@ def admin_add_product():
 @app.route('/admin/bestsellers', methods=['GET', 'POST'])
 @login_required
 def admin_bestsellers():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-
+    
     if request.method == 'POST':
         product_id = request.form.get('product_id')
         action = request.form.get('action')
@@ -762,10 +779,11 @@ def admin_bestsellers():
 @app.route('/admin/new_arrivals', methods=['GET', 'POST'])
 @login_required
 def admin_new_arrivals():
-    if current_user.user_type != 'admin':
-        flash('Access denied')
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
         return redirect(url_for('index'))
-
+    
     if request.method == 'POST':
         product_id = request.form.get('product_id')
         action = request.form.get('action')
@@ -1156,11 +1174,12 @@ def payment():
                            amount=amount_paise
                           )
 
-@app.route('/admin/product/<int:product_id>')
 @login_required
 def get_product(product_id):
-    if current_user.user_type != 'admin':
-        return jsonify({'success': False, 'message': 'Access denied'}), 403
+    # Allow access if user is 'admin' or has the special admin session flag
+    if not (current_user.user_type == 'admin' or session.get('is_special_admin')):
+        flash('Access denied', 'error')
+        return redirect(url_for('index'))
     
     product = Product.query.get_or_404(product_id)
     return jsonify({

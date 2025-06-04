@@ -46,7 +46,7 @@
 
 .category-image-wrapper {
     position: absolute;
-    top: 0; 
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -221,9 +221,29 @@
     font-size: 1rem;
 }
 
+/* Responsive styles for Hero Section image */
+.hero-bg {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 500px; /* Default height for larger screens */
+    /* Default background image for desktop */
+    background-image: url('{{ url_for('static', filename='images/hero1.png') }}');
+}
+
+@media (max-width: 768px) { /* Apply styles for screens smaller than 768px (md breakpoint) */
+    .hero-bg {
+        min-height: 300px; /* Reduced height for mobile */
+        background-size: cover; /* Ensure it still covers */
+        background-position: center; /* Keep it centered */
+        /* Mobile specific background image */
+        background-image: url('{{ url_for('static', filename='images/mobhero.png') }}');
+    }
+}
+
 </style>
 <!-- Hero Section -->
-<div class="hero-bg w-full relative min-h-[300px] md:min-h-[500px]" style="background-image: url('{{ url_for('static', filename='images/hero1.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div class="hero-bg w-full relative">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
 <div class="w-full md:w-1/2">
             {# Hero content goes here if needed #}
