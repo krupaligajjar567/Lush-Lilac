@@ -24,7 +24,7 @@
             <!-- Product Management Section -->
             <section class="product-management">
                 <h3>Product Management</h3>
-                <form method="POST" action="{{ url_for('admin_add_product') }}" class="add-product-form">
+                <form method="POST" action="{{ url_for('admin_add_product') }}" class="add-product-form" enctype="multipart/form-data">
                     <h4>Add New Product</h4>
                     <div class="form-group">
                         <label for="name">Product Name:</label>

@@ -6,6 +6,7 @@ import os
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
+from flask_cors import CORS  # Import CORS
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'  # Change this to a secure secret key
@@ -27,6 +28,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 mail = Mail(app)
+CORS(app)  # Initialize CORS with your Flask app
 
 # User Model
 class User(UserMixin, db.Model):
@@ -738,6 +740,17 @@ def admin_add_product():
             return redirect(url_for('admin_add_product'))
     # GET: show form and product list
     products = Product.query.all()
+    categories = [
+        "Phone Case",
+        "Mouse Pad",
+        "Bags",
+        "Candles",
+        "Accessories",
+        "Nail",
+        "Decor",
+        "Stationary",
+        "Glass Tumblers"
+    ]
     return render_template('admin_add_product.html', products=products, categories=categories)
 
 @app.route('/admin/bestsellers', methods=['GET', 'POST'])
@@ -851,6 +864,26 @@ def new_arrivals_page():
     # Render the products_list.html template, passing the fetched products
     # We can reuse products_list.html as it's designed to display a list of products
     return render_template('products_list.html', products=latest_products)
+
+@app.route('/api/products', methods=['GET'])
+def api_products():
+    """API endpoint to return all products as JSON."""
+    products = Product.query.all()
+    # Convert products to a list of dictionaries
+    products_list = []
+    for product in products:
+        products_list.append({
+            'id': product.id,
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'stock': product.stock,
+            'image': product.image, # Assuming image stores filename
+            'category': product.category,
+            'is_bestseller': product.is_bestseller,
+            'is_new_arrival': product.is_new_arrival
+        })
+    return jsonify(products_list)
 
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
 @login_required
@@ -1472,6 +1505,26 @@ def featured_collection(product_ids_str):
     page_title = "Featured Collection"
 
     return render_template('featured_collection.html', products=products, page_title=page_title)
+
+@app.route('/shipping-returns')
+def shipping_returns():
+    return render_template('shipping_returns.html')
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
+
+@app.route('/track-order')
+def track_order():
+    return render_template('track_order.html')
+
+@app.route('/privacy-policy')
+def privacy_policy():
+    return render_template('privacy_policy.html')
+
+@app.route('/terms-of-service')
+def terms_of_service():
+    return render_template('terms_of_service.html')
 
 if __name__ == '__main__':
     app.run(debug=True) 

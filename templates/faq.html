@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-10 mt-10 mb-16">
+    <div class="flex items-center mb-6">
+        <i class="ri-question-answer-line text-4xl text-primary mr-4"></i>
+        <h1 class="text-3xl font-bold text-primary">Frequently Asked Questions</h1>
+    </div>
+    <div class="space-y-8">
+        <div class="bg-[#F9F0F7] rounded-lg p-6 flex items-start gap-4 shadow-sm">
+            <i class="ri-shopping-bag-3-line text-2xl text-[#C8A2C8] mt-1"></i>
+            <div>
+                <h2 class="font-semibold text-[#7D5E7A] text-lg mb-1">How do I place an order?</h2>
+                <p class="text-[#9A7B97]">Simply add items to your cart and checkout!</p>
+            </div>
+        </div>
+        <div class="bg-[#F9F0F7] rounded-lg p-6 flex items-start gap-4 shadow-sm">
+            <i class="ri-bank-card-line text-2xl text-[#FFD6E0] mt-1"></i>
+            <div>
+                <h2 class="font-semibold text-[#7D5E7A] text-lg mb-1">What payment methods do you accept?</h2>
+                <p class="text-[#9A7B97]">We accept Visa, MasterCard, PayPal, and more.</p>
+            </div>
+        </div>
+        <div class="bg-[#F9F0F7] rounded-lg p-6 flex items-start gap-4 shadow-sm">
+            <i class="ri-truck-line text-2xl text-[#FFB5D8] mt-1"></i>
+            <div>
+                <h2 class="font-semibold text-[#7D5E7A] text-lg mb-1">How can I track my order?</h2>
+                <p class="text-[#9A7B97]">Use the <a href="{{ url_for('track_order') }}" class="text-primary underline">Track Order</a> page with your order ID.</p>
+            </div>
+        </div>
+        <div class="bg-[#F9F0F7] rounded-lg p-6 flex items-start gap-4 shadow-sm">
+            <i class="ri-refresh-line text-2xl text-[#FFD6E0] mt-1"></i>
+            <div>
+                <h2 class="font-semibold text-[#7D5E7A] text-lg mb-1">Can I return a product?</h2>
+                <p class="text-[#9A7B97]">We do not offer returns at this time. However, we offer free replacements for damaged, wrong, or incorrect items. See our <a href="{{ url_for('shipping_returns') }}" class="text-primary underline">Shipping & Replacements</a> page for details.</p>
+            </div>
+        </div>
+        <div class="bg-[#F9F0F7] rounded-lg p-6 flex items-start gap-4 shadow-sm">
+            <i class="ri-customer-service-2-line text-2xl text-[#C8A2C8] mt-1"></i>
+            <div>
+                <h2 class="font-semibold text-[#7D5E7A] text-lg mb-1">How do I contact customer service?</h2>
+                <p class="text-[#9A7B97]">Email us at <a href="mailto:lushlilac30@gmail.com" class="text-primary underline">lushlilac30@gmail.com</a> or use the <a href="{{ url_for('contact') }}" class="text-primary underline">Contact Us</a> page.</p>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-center mt-10">
+        <img src="{{ url_for('static', filename='images/lush_lilac_logo.png') }}" alt="Lush Lilac Logo" class="w-40 h-40 object-contain opacity-80 rounded-xl shadow-md">
+    </div>
+</div>
+{% endblock %} 

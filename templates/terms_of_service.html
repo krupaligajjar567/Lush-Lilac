@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-10 mt-10 mb-16">
+    <div class="flex items-center mb-6">
+        <i class="ri-file-list-3-line text-4xl text-primary mr-4"></i>
+        <h1 class="text-3xl font-bold text-primary">Terms of Service</h1>
+    </div>
+    <p class="text-[#7D5E7A] mb-6 text-lg">By using our website, you agree to our terms and conditions. Please read them carefully before making a purchase.</p>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-checkbox-circle-line mr-2 text-[#C8A2C8]"></i>Key Points</h2>
+        <ul class="list-disc pl-6 text-[#9A7B97]">
+            <li>All sales are final except for cases covered by our replacement policy.</li>
+            <li>Product images are for reference; slight variations may occur.</li>
+            <li>By placing an order, you agree to provide accurate information.</li>
+            <li>We reserve the right to update these terms at any time.</li>
+        </ul>
+    </div>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-customer-service-2-line mr-2 text-[#FFD6E0]"></i>Contact Us</h2>
+        <p class="text-[#9A7B97]">If you have any questions about our terms, please email us at <a href="mailto:lushlilac30@gmail.com" class="text-primary underline">lushlilac30@gmail.com</a>.</p>
+    </div>
+    <div class="flex justify-center mt-10">
+        <img src="{{ url_for('static', filename='images/lush_lilac_logo.png') }}" alt="Lush Lilac Logo" class="w-40 h-40 object-contain opacity-80 rounded-xl shadow-md">
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-10 mt-10 mb-16">
+    <div class="flex items-center mb-6">
+        <i class="ri-truck-line text-4xl text-primary mr-4"></i>
+        <h1 class="text-3xl font-bold text-primary">Shipping & Replacements</h1>
+    </div>
+    <p class="text-[#7D5E7A] mb-6 text-lg">We want you to have a smooth and happy experience with Lush Lilac! Please read our shipping and replacement policy below.</p>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-truck-fill mr-2 text-[#FFB5D8]"></i>Shipping</h2>
+        <ul class="list-disc pl-6 text-[#9A7B97]">
+            <li>Orders are shipped within <span class="font-semibold">2-3 business days</span> after payment confirmation.</li>
+            <li>We ship across India via trusted courier partners.</li>
+            <li>You will receive a tracking link by email once your order is dispatched.</li>
+        </ul>
+    </div>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-refresh-line mr-2 text-[#FFD6E0]"></i>Replacement Policy</h2>
+        <ul class="list-disc pl-6 text-[#9A7B97]">
+            <li><span class="font-semibold">We do not offer returns at this time.</span></li>
+            <li>We offer <span class="font-semibold">free replacement</span> only in the following cases:
+                <ul class="list-disc pl-8 mt-2">
+                    <li>Product received is <span class="font-semibold">damaged</span> in transit</li>
+                    <li>You received the <span class="font-semibold">wrong product</span></li>
+                    <li>Wrong size or color sent (if applicable)</li>
+                </ul>
+            </li>
+            <li>To request a replacement, please email us at <a href="mailto:lushlilac30@gmail.com" class="text-primary underline">lushlilac30@gmail.com</a> within <span class="font-semibold">48 hours</span> of delivery with photos of the product and packaging.</li>
+            <li>We do not offer replacements for change of mind or incorrect address provided.</li>
+        </ul>
+    </div>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-question-answer-line mr-2 text-[#C8A2C8]"></i>Need Help?</h2>
+        <p class="text-[#9A7B97]">If you have any questions about your order, shipping, or our replacement policy, please contact us at <a href="mailto:lushlilac30@gmail.com" class="text-primary underline">lushlilac30@gmail.com</a>.<br>We're here to help!</p>
+    </div>
+    <div class="flex justify-center mt-10">
+        <img src="{{ url_for('static', filename='images/lush_lilac_logo.png') }}" alt="Lush Lilac Logo" class="w-40 h-40 object-contain opacity-80 rounded-xl shadow-md">
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-10 mt-10 mb-16">
+    <div class="flex items-center mb-6">
+        <i class="ri-truck-line text-4xl text-primary mr-4"></i>
+        <h1 class="text-3xl font-bold text-primary">Track Your Order</h1>
+    </div>
+    <p class="text-[#7D5E7A] mb-6 text-lg">Enter your order ID below to track your shipment. We'll show you the latest status and tracking information!</p>
+    <form class="bg-[#F9F0F7] rounded-lg p-6 flex flex-col md:flex-row items-center gap-4 shadow-sm mb-8">
+        <label for="order-id" class="text-[#7D5E7A] font-semibold text-lg mr-2">Order ID</label>
+        <input id="order-id" type="text" placeholder="e.g. 123456" required class="flex-1 py-2 px-4 rounded-button border-2 border-[#E8D5E4] focus:outline-none focus:border-primary text-[#7D5E7A]">
+        <button type="submit" class="bg-primary hover:bg-[#D4B6D0] text-white px-6 py-2 rounded-button font-medium transition-all duration-300">Track</button>
+    </form>
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold text-[#7D5E7A] mb-2 flex items-center"><i class="ri-question-answer-line mr-2 text-[#C8A2C8]"></i>Need Help?</h2>
+        <p class="text-[#9A7B97]">If you need help, contact us at <a href="mailto:lushlilac30@gmail.com" class="text-primary underline">lushlilac30@gmail.com</a>.</p>
+    </div>
+    <div class="flex justify-center mt-10">
+        <img src="{{ url_for('static', filename='images/lush_lilac_logo.png') }}" alt="Lush Lilac Logo" class="w-40 h-40 object-contain opacity-80 rounded-xl shadow-md">
+    </div>
+</div>
+{% endblock %} 
